@@ -1,0 +1,72 @@
+---
+##
+# This file provides all tasks related to package management.
+# It starts by setting up some configuration on the package
+# management system itself.
+# It includes updating packages to latest version as well as
+# installing and removing software.
+##
+
+- name: Update cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+# Update the system with security packages using the system's package manager
+# Only update the system if the 'update_system' variable is set to true
+- name: Update packages
+  apt:
+    upgrade: dist
+  when: package_management.update_system
+  tags:
+    - UPDATE_SYSTEM
+
+- name: Install packages
+  apt:
+    name: "{{ package_management.install_packages }}"
+    state: present
+
+- name: Install GNUPG2 package so apt-key command works
+  apt:
+    name: gnupg2
+    state: present
+
+- name: Delete unused packages
+  apt:
+    name: "{{ package_management.remove_packages }}"
+    state: absent
+    purge: "{{ package_management.purge }}"
+
+- name: Autoremove unneeded packages installed as dependencies
+  apt:
+    autoremove: yes
+  when: package_management.autoremove 
+
+- name: Perform autoclean (remove useless files from cache)
+  apt:
+    autoclean: yes
+
+- name: Run command to get apt package repositories
+  command: "/usr/bin/apt-cache policy"
+  register: result
+  changed_when: false
+  failed_when: result.rc != 0
+
+- name: Display package manager repositories (for manual review)
+  debug:
+    msg:
+      - "List of configured apt repositories (apt-cache policy):"
+      - "{{ result.stdout_lines }}"
+
+- name: Run command to get list of GPG keys
+  command: "/usr/bin/apt-key list"
+  register: result
+  changed_when: false
+  failed_when: result.rc != 0
+
+- name: Display package manager GPG Keys (for manual review)
+  debug:
+    msg:
+      - "List of configured keys (apt-key list):"
+      - "{{ result.stdout_lines }}"
+

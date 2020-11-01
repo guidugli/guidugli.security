@@ -1,0 +1,96 @@
+---
+##
+# This task file checks all the variables created to customize the
+# configuration of the packaging system and which packages to install
+# based on the features enabled for the system.
+##
+
+- name: Set default value for non valid integers
+  set_fact:
+    int_default_value: -1
+
+- name: Set a variable to map features, os family and packages
+  set_fact:
+    features_pkg_map:
+      iptables:
+        Debian: ['iptables']
+        RedHat: ['iptables-services']
+      audit:
+        Debian: ['auditd']
+        RedHat: ['audit','audit-libs']
+      selinux:
+        Debian: ['selinux-basics','selinux-utils','policycoreutils']
+        RedHat: ['selinux-policy-targeted','libselinux-utils','policycoreutils']
+      sudo:
+        Debian: ['sudo']
+        RedHat: ['sudo']
+      chrony:
+        Debian: ['chrony']
+        RedHat: ['chrony']
+      ssh:
+        Debian: ['openssh-server']
+        RedHat: ['openssh-server']
+      rsyslog:
+        Debian: ['rsyslog']
+        RedHat: ['rsyslog']
+      aide:
+        Debian: ['aide']
+        RedHat: ['aide']
+      firewall:
+      grub:
+
+# The variables below will be overwritten with default value if they were not specified
+- name: Checking package management Configuration Variables
+  set_fact:
+    package_management:
+      update_system: "{{ package_management.update_system | default(true) }}"
+      security_upd_only: "{{ package_management.security_upd_only | default(false) }}"
+      autoremove: "{{ package_management.autoremove | default(false) }}"
+      purge: "{{ package_management.purge | default(false) }}"
+      gpgcheck: "{{ package_management.gpgcheck | default(true) }}"
+      disable_rhnsd: "{{ package_management.disable_rhnsd | default(true) }}"
+      install_packages: "{{ package_management.install_packages | default([], true) }}"
+      remove_packages: "{{ package_management.remove_packages | default([], true) }}"
+
+- name: Check if these package_management 'yes','no','true','false' values are invalid
+  assert:
+    quiet: yes
+    that:
+      - (item.value | lower) in ['true','false']
+    msg: "Invalid value for {{ item.key }}. Allowed values are 'yes', 'no', 'true', 'false'."
+  loop: "{{ package_management | dict2items | selectattr('key', 'match', 'update_system|security_upd_only|gpgcheck|disable_rhnsd') | list }}"
+
+#- name: Check if firewall selection is valid
+#  assert:
+#    quiet: yes
+#    that:
+#      - system_features.firewall_enabled and
+#        (firewall_settings.firewall_package in ['firewalld','iptables']) or
+#        (firewall_settings.firewall_package == 'ufw' and ansible_os_family == "Debian")
+#    msg: "Firewall feature is enabled but firewall package name is invalid."
+
+#- name: Add required packages based on feature selection
+#  block:
+
+#    - name: Add selinux packaged
+#      set_fact:
+#        feature_packages: "{{ feature_packages | default([]) + item.packages }}"
+#      when: item.enabled
+#      loop:
+#        - { packages: "{{ package_name['selinux'][ansible_os_family] }}", enabled: "{{ system_features.selinux_enabled }}" }
+#        - { packages: ['sudo'], enabled: "{{ system_features.sudo_enabled }}" }
+#        - { packages: ['chrony'], enabled: "{{ system_features.chrony_enabled }}" }
+#        - { packages: ['openssh-server'], enabled: "{{ system_features.ssh_enabled }}" }
+#        - { packages: "{{ package_name['audit'][ansible_os_family] }}", enabled: "{{ system_features.audit_enabled }}" }
+#        - { packages: ['rsyslog'], enabled: "{{ system_features.rsyslog_enabled }}" }
+#        - { packages: ['aide'], enabled: "{{ system_features.aide_enabled }}" }
+#        - { packages: "{{ package_name['iptables'][ansible_os_family] if (firewall_package == 'iptables') else [firewall_package] }}", enabled: "{{ system_features.firewall_enabled }}" }
+
+#    - name: Add feature packages to package_management.install_packages variable
+#      set_fact:
+#        package_management: "{{ package_management | default([], true) | combine({'install_packages': feature_packages}) }}"
+
+
+# There is no pre-defined/hard-coded package removal as admins might want to leave
+# considered 'non-secure' software installed
+

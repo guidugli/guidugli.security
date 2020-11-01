@@ -1,0 +1,24 @@
+---
+# defaults file for openssh-server
+
+# NOTE: port will only work if ansible_port is not provided for the device, i.e.,
+#       if ansible port is provided, this role will use it; if it is not provided,
+#       this role will try the sshd_config.port value; if not provided, use port 22.
+
+sshd_config:
+  port: 14090   
+  log_level: 'INFO'
+  x11forwarding: 'no'
+  max_auth_tries: 4
+  client_alive_interval: 300
+  client_alive_count_max: 0
+  login_grace_time: 60
+  banner: '/etc/issue.net'
+  allow_tcp_forwarding: 'no'
+  max_sessions: 4
+  access_control:
+    allow_users: ['carlospg']
+    allow_groups:
+    DenyUsers:
+    DenyGroups:
+ 

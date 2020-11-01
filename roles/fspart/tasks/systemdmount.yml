@@ -1,0 +1,104 @@
+---
+# Tasks to setup or maintain systemd mount units
+# It is on a specific file so it can work with a loop
+
+# Autofix will check and adjust configuration files so the filesystem
+# is mounted properly. If the unit cannot be found in /etc/systemd/system,
+# the role will attempt to copy a local file with same unit name from 
+# role's file directory, to the target system. If a local file with the
+# unit name is found locally on role's file directory, it will try to copy \
+# it from /lib/systemd/system.
+# NOTE: files on /etc/systemd/system will NOT be overwritten
+
+- name: Set variable to be used on notifications
+  set_fact:
+    fspart_unit_notify: "{{ item.unit_name }}"
+
+- name: "Check if {{ item.unit_name }} already exist on /etc/systemd/system"
+  raw: "test -e /etc/systemd/system/{{ item.unit_name }} && echo -n true || echo -n false"
+  register: result
+  failed_when: result.rc != 0
+  changed_when: false
+
+- name: Save last operation result as a boolean
+  set_fact:
+    exists_on_etc_systemd: "{{ result.stdout | bool }}"
+
+- name: "Copy {{ item.unit_name }} from source location to /etc/systemd/system"
+  vars:
+    unit_file_source_dir: "{{ '/usr/share/systemd' if (ansible_os_family == 'Debian' and item.unit_name == 'tmp.mount') else '/lib/systemd/system' }}"
+  block:
+
+    # First try to copy the unit file from controller
+    - name: "Copy unit file {{ item.unit_name }} from ansible controller"
+      copy:
+        src: "{{ item.unit_name }}"
+        dest: "/etc/systemd/system/{{ item.unit_name }}"
+        force: no 
+        owner: root
+        group: root
+        mode: '0644'
+        setype: systemd_unit_file_t
+        serole: object_r
+        seuser: system_u
+        remote_src: no
+      ignore_errors: yes
+      no_log: yes
+      notify: reload systemd configuration
+      register: copy_result
+
+    # If it fails (do not exist on the controller) then try to copy it from 
+    # remote host /lib/systemd/system directory
+    - name: "Copy unit file {{ item.unit_name }} from {{ unit_file_source_dir }} to /etc/systemd/system/{{ item.unit_name }} on remote host"
+      copy:
+        src: "{{ unit_file_source_dir }}/{{ item.unit_name }}"
+        dest: "/etc/systemd/system/{{ item.unit_name }}"
+        force: no
+        owner: root
+        group: root
+        mode: '0644'
+        setype: systemd_unit_file_t
+        serole: object_r
+        seuser: system_u
+        remote_src: yes
+      notify: reload systemd configuration
+      when: copy_result is failed
+
+  when: not exists_on_etc_systemd
+
+- name: "Fix values in /etc/systemd/system/{{ item.unit_name }} if required"
+  block:
+    
+    # Only found this problem on tmp.mount of Fedora 33 but it does not hurt
+    # to check on every platform
+    - name: "Add missing install section (if needed) for {{ item.unit_name }}"
+      ini_file:
+        path: '/etc/systemd/system/{{ item.unit_name }}'
+        section: Install
+        option: WantedBy
+        value: local-fs.target
+        no_extra_spaces: yes
+      notify: 
+        - reload systemd configuration
+        - restart systemd unit
+
+    - name: "Configure config file options for unit {{ item.unit_name }}"
+      lineinfile:
+        path: "/etc/systemd/system/{{ item.unit_name }}"
+        regexp: 'Options='
+        line: "{{ 'Options=' + (item['mount_options'] | join(',')) }}"
+        state: present
+      notify: 
+        - reload systemd configuration
+        - restart systemd unit
+
+
+- name: Force systemd to reload in order to enable it to notice the changes
+  meta: flush_handlers
+
+#- name: "Enable and start or restart {{ item.unit_name }}"
+#  systemd:
+#    name: "{{ item.unit_name }}"
+#    enabled: yes
+#    state: "{{ 'restarted' if (copy_result.changed or addinstall_result.changed or (tmp_mount_options and tmp_mount_options.changed)) else 'started' }}"
+

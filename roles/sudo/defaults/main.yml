@@ -1,0 +1,6 @@
+---
+# defaults file for sudo
+
+sudo:
+  log: /var/log/sudo.log
+

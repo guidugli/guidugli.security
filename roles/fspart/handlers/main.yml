@@ -1,0 +1,13 @@
+---
+# handlers file for fspart
+
+# Reload daemon if any unit added or changed on disk
+- name: reload systemd configuration
+  systemd:
+    daemon_reload: yes
+
+- name: restart systemd unit
+  systemd:
+    name: "{{ fspart_unit_notify }}"
+    enabled: yes
+    state: restarted

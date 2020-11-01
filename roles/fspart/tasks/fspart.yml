@@ -1,0 +1,54 @@
+---
+##
+# This file provides all tasks related to filesystem and 
+# partition management.
+# Although it can make /tmp on its own tmpfs partition, it does
+# not set any other partition as the idea of this role is 
+# security related, so it will just report deviations.
+# Since partitioning is not something that happens constantly,
+# validating that a specific partition exists and that it is
+# mounted with correct options is enough.
+##
+
+######################
+## MOUNT UNIT FILES ##
+######################
+
+- name: Check systemd unit files for each partition with autofix set to true
+  include_tasks: systemdmount.yml
+  loop: "{{ partitions | selectattr('autofix') | list }}"
+
+
+################
+## VALIDATION ##
+################
+
+# Ansible mounts misses several mount points so it is easier to just 
+# use shell script to check them.
+
+# Now just check each specified partitions exists (using shell commands)
+- name: Checking if all specified partitions exists (using shell commands)
+  shell: "findmnt -O '{{ item.validate_options | join(',') }}' {{ item['name'] }}"
+  register: result
+  failed_when: result.rc != 0
+  changed_when: false
+  #loop: "{{ partitions | selectattr('ansible_mounts_listed','equalto', false) | list }}"
+  loop: "{{ partitions }}"
+  loop_control:
+    label: "Partition: {{ item.name }}, Mount options: {{ item.validate_options | join(',') }}"
+
+#######################
+## CHECK FILESYSTEMS ##
+#######################
+
+# Ensure sticky bit is set on all world-writeable directories
+# This task will not try to fix the problem as manual review
+# is advised before changing permissions.
+- name: Verify no world writeable directories exists without the sticky bit set
+  shell: "df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type d '(' -perm -0002 -a ! -perm -1000 ')' 2>/dev/null"
+  register: result
+  failed_when: result.stdout != ""
+  changed_when: false
+  tags:
+    - STICKY_BIT_CHECK
+

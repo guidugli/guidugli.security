@@ -1,0 +1,24 @@
+##
+# This task file checks all the variables created to customize SUDO,
+# and plataform specific variables.
+##
+
+- name: Set variable with regular expression to confirm a path is valid
+  set_fact:
+    pathre: '^(?:[\/])$|^(?:[\/][a-zA-Z0-9_.-]+)+[\/]?$'
+
+
+# The variables below will be overwritten with default value if they were not specified
+- name: Checking sudo variables
+  set_fact:
+    sudo:
+      log: "{{ sudo.log | default('/var/log/sudo', true) }}"
+
+
+- name: Check if sudo log value is valid.
+  assert:
+    quiet: yes
+    that:
+      - sudo.log is regex(pathre)  # Check if it is a directory
+    msg: "Invalid sudo log path ({{ sudo.log }})."
+

@@ -1,0 +1,10 @@
+---
+# tasks file for fspart
+
+- name: Check partition variables
+  import_tasks: pretasks.yml
+
+- name: Run partition checking/configuration tasks
+  import_tasks: fspart.yml
+
+

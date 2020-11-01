@@ -1,0 +1,34 @@
+---
+##
+# This file provides all tasks related to sudo configuration. 
+##
+
+- name: Install sudo if not already installed
+  package:
+    name: sudo
+    state: present
+  tags:
+    - SUDO_INSTALL
+
+# Make sure the sudoers file includes the requirement to use pty
+- name: Ensure sudo commands use pty
+  lineinfile:
+    path: /etc/sudoers.d/01_security
+    regexp: '^Defaults\s*use_pty'
+    line: "Defaults use_pty"
+    create: yes
+    validate: /usr/sbin/visudo -cf %s
+  tags:
+    - SUDO_USE_PTY
+
+# Make sure the sudoers file includes the requirement to log to a file
+- name: Ensure sudo log file exists
+  lineinfile:
+    path: /etc/sudoers.d/01_security
+    regexp: '^Defaults\s*logfile="{{ sudo.log }}"'
+    line: 'Defaults logfile={{ sudo.log }}'
+    create: yes
+    validate: /usr/sbin/visudo -cf %s
+  tags:
+    - SUDO_SET_LOG_PATH
+

@@ -1,0 +1,21 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+
+    - name: update packages on debian family systems
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        upgrade: dist
+      when: ansible_os_family == 'Debian'
+
+    - name: update packages on RedHat family systems
+      dnf:
+        name: "*"
+        state: latest        
+      when: ansible_os_family == 'RedHat'
+
+    - name: "Include sudo"
+      include_role:
+        name: "sudo"

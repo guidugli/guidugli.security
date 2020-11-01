@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+
+    - name: "Include fspart"
+      include_role:
+        name: "fspart"

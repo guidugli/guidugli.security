@@ -1,0 +1,43 @@
+---
+# defaults file for fspart
+
+# List of partitions that must be present on the system
+# and the mount options they should have.
+
+# Autofix will check and adjust configuration files so the filesystem
+# is mounted properly. If the unit cannot be found in /etc/systemd/system,
+# the role will attempt to copy a local file with same unit name from 
+# role's file directory, to the target system. If a local file with the
+# unit name is found locally on role's file directory, it will try to copy \
+# it from /lib/systemd/system.
+# NOTE: files on /etc/systemd/system will NOT be overwritten
+
+# The mount_options is a list of all mount options that will be set on the 
+# unit mount point definition file (xxxxx.mount). The role will change the
+# unit file to match these options.
+
+# The validate_options is a list of mount options that the mounted filesystem
+# must have. This variable will not cause any change on any configuration,
+# but if a partition is mounted without it, the execution will fail.
+
+partitions:
+  - name: /tmp
+    unit_name: tmp.mount
+    mount_options: ['mode=1777','strictatime','nodev','nosuid','noexec']
+    validate_options: ['nodev','nosuid','noexec']
+    autofix: yes
+#  - name: /var
+#  - name: /var/log
+#  - name: /var/log/audit
+#  - name: /var/tmp
+#    options: ['nodev','nosuid','noexec']
+#  - name: /home
+#    options: ['nodev']
+#  - name: /dev/shm
+#    options: ['nodev','nosuid','noexec']
+  - name: /tmp_dir
+    unit_name: tmp_dir.mount
+    mount_options: ['mode=1777','strictatime','nodev','nosuid','noexec']
+    validate_options: ['nodev','nosuid','noexec']
+    autofix: yes
+
