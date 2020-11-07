@@ -7,28 +7,34 @@
   package:
     name: sudo
     state: present
-  tags:
-    - SUDO_INSTALL
 
 # Make sure the sudoers file includes the requirement to use pty
 - name: Ensure sudo commands use pty
   lineinfile:
-    path: /etc/sudoers.d/01_security
+    path: "/etc/sudoers.d/{{ sudo_config_file_name }}"
     regexp: '^Defaults\s*use_pty'
     line: "Defaults use_pty"
     create: yes
+    state: "{{ sudo_cmd_use_pty | bool | ternary('present','absent') }}"
     validate: /usr/sbin/visudo -cf %s
-  tags:
-    - SUDO_USE_PTY
+  when: sudo_cmd_use_pty is defined
 
 # Make sure the sudoers file includes the requirement to log to a file
 - name: Ensure sudo log file exists
   lineinfile:
-    path: /etc/sudoers.d/01_security
-    regexp: '^Defaults\s*logfile="{{ sudo.log }}"'
-    line: 'Defaults logfile={{ sudo.log }}'
+    path: "/etc/sudoers.d/{{ sudo_config_file_name }}"
+    regexp: '^Defaults\s+(log_host,\s*log_year,)?\slogfile='
+    line: 'Defaults log_host, log_year, logfile={{ sudo_log }}'
     create: yes
     validate: /usr/sbin/visudo -cf %s
-  tags:
-    - SUDO_SET_LOG_PATH
+  when: sudo_log is defined
+
+- name: Set secure_path
+  lineinfile:
+    path: "/etc/sudoers.d/{{ sudo_config_file_name }}"
+    regexp: '^Defaults\s+secure_path='
+    line: 'Defaults secure_path="{{ sudo_secure_path }}"'
+    create: yes
+    validate: /usr/sbin/visudo -cf %s
+  when: sudo_secure_path is defined
 

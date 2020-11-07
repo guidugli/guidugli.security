@@ -1,0 +1,162 @@
+---
+# Tasks for firewalld firewall implementation and configuration
+
+# Avoid losing connection to server. Since it is only runtime
+# it won't persist unless specified in the configuration variables.
+- name: Apply a runtime only rule to add current ssh connection
+  firewalld:
+    port: "{{ ansible_port }}/tcp"
+    permanent: no
+  when: ansible_port is defined
+
+- name: Verify if provided service mapping exists on target system
+  include_tasks: firewalld_services.yml
+  loop: "{{ firewall_service_mapping  }}"
+
+- name: Retrieve and configure firewalld default zone
+  block:
+    - name: Ensure default zone is set for firewalld
+      command: /usr/bin/firewall-cmd --get-default-zone
+      changed_when: false
+      register: firewalld_get_default_zone_cmd
+
+    - name: Set default zone to {{ firewalld_default_zone | default('public') }}
+      command: "firewall-cmd --set-default-zone={{ firewalld_default_zone | default('public') }}"
+      when: firewalld_zone is defined and firewalld_get_default_zone_cmd.stdout != firewalld_default_zone 
+
+    - name: Update firewalld_default_zone if required
+      set_fact:
+        firewalld_default_zone: "{{ firewalld_get_default_zone_cmd.stdout }}"
+
+- name: open ports (firewalld-port)
+  firewalld:
+    port: "{{ item.name }}/{{ item.protocol | default(firewall_default_protocol) }}"
+    permanent: yes
+    state: enabled
+    zone: "{{ item.zone | default(firewalld_default_zone) }}"
+  loop: "{{ firewall_services }}"
+  when:
+    - firewall_services is defined
+    - item.name | int(-1) > 0
+    - (item.action is not defined and firewall_default_action == 'allow') or 
+      (item.action is defined and item.action == 'allow')
+  loop_control:
+    label: "{{ item.name }}/{{ item.protocol | default(firewall_default_protocol) }}"
+  notify:
+    - reload firewalld
+
+- name: close ports (firewalld-port)
+  firewalld:
+    port: "{{ item.name }}/{{ item.protocol | default(firewall_default_protocol) }}"
+    permanent: yes
+    state: disabled
+    zone: "{{ item.zone | default(firewalld_default_zone) }}"
+  loop: "{{ firewall_services }}"
+  when:
+    - item.name is number
+    - (item.action is not defined and firewall_default_action != 'allow') or
+      (item.action is defined and item.action != 'allow')
+  loop_control:
+    label: "{{ item.name }}"
+  notify:
+    - reload firewalld
+
+- name: open ports (firewalld-service)
+  firewalld:
+    service: "{{ item.name }}"
+    permanent: yes
+    state: enabled
+    zone: "{{ item.zone | default(firewalld_default_zone) }}"
+  loop: "{{ firewall_services }}"
+  when:
+    - item.name is not number
+    - (item.action is not defined and firewall_default_action == 'allow') or
+      (item.action is defined and item.action == 'allow')
+  loop_control:
+    label: "{{ item.name }}"
+  notify:
+    - reload firewalld
+
+- name: close ports (firewalld-service)
+  vars:
+    item_action: "{{ item.action | default(firewall_default_action) }}"
+    item_zone: "{{ item.zone | default(firewalld_default_zone) }}"
+  firewalld:
+    service: "{{ item.name }}"
+    permanent: yes
+    state: disabled
+    zone: "{{ item_zone }}"
+  loop: "{{ firewall_services }}"
+  when:
+    - item.name is not number
+    - item_action == 'deny'
+  loop_control:
+    label: "{{ item.name }}, {{ item_zone }}"
+  notify:
+    - reload firewalld
+
+- name: Configure OUTPUT chain
+  block:
+    - name: Add rule to allow established connections
+      command: "firewall-offline-cmd --direct --add-rule ipv4 filter OUTPUT 0 -m state --state ESTABLISHED,RELATED -j ACCEPT"
+      changed_when: firewall_output_cmd.stderr == ""
+      register: firewall_output_cmd
+      when: firewall_output_default_action == 'deny'
+      notify:
+        - reload firewalld
+
+    - name: Add rules to allow outgoing connection for selected ports
+      command: "firewall-offline-cmd --direct --add-rule ipv4 filter OUTPUT 1 -p {{ item.protocol }} -m {{ item.protocol }} --dport {{ item.port }} -j ACCEPT"
+      changed_when: firewall_output_cmd.stderr == ""
+      register: firewall_output_cmd
+      loop: "{{ firewall_output_allow_ports }}"
+      when: firewall_output_default_action == 'deny'
+      notify:
+        - reload firewalld
+
+    - name: Add rule to deny all traffic that do not match previous rules
+      command: "firewall-offline-cmd --direct --add-rule ipv4 filter OUTPUT 2 -j DROP"
+      changed_when: firewall_output_cmd.stderr == ""
+      register: firewall_output_cmd
+      when: firewall_output_default_action == 'deny'
+      notify:
+        - reload firewalld
+
+    - name: Add rule to allow established connections
+      command: "firewall-offline-cmd --direct --remove-rule ipv4 filter OUTPUT 0 -m state --state ESTABLISHED,RELATED -j ACCEPT"
+      changed_when: firewall_output_cmd.rc == 0 
+      failed_when: firewall_output_cmd.rc not in [0,2]
+      register: firewall_output_cmd
+      when: firewall_output_default_action == 'allow'
+      notify:
+        - reload firewalld
+
+    - name: Add rules to allow outgoing connection for selected ports
+      command: "firewall-offline-cmd --direct --remove-rule ipv4 filter OUTPUT 1 -p {{ item.protocol }} -m {{ item.protocol }} --dport {{ item.port }} -j ACCEPT"
+      changed_when: firewall_output_cmd.stderr == ""
+      failed_when: firewall_output_cmd.rc not in [0,2]
+      register: firewall_output_cmd
+      loop: "{{ firewall_output_allow_ports }}"
+      when: firewall_output_default_action == 'allow'
+      notify:
+        - reload firewalld
+
+    - name: Add rule to deny all traffic that do not match previous rules
+      command: "firewall-offline-cmd --direct --remove-rule ipv4 filter OUTPUT 2 -j DROP"
+      changed_when: firewall_output_cmd.stderr == ""
+      failed_when: firewall_output_cmd.rc not in [0,2]
+      register: firewall_output_cmd
+      when: firewall_output_default_action == 'allow'
+      notify:
+        - reload firewalld
+
+- meta: flush_handlers
+
+- name: Display effective configuration after tasks
+  command: "firewall-offline-cmd --list-all-zones"
+  register: firewall_output_cmd
+  changed_when: false
+
+- debug:
+    msg: "{{ firewall_output_cmd.stdout_lines }}"
+

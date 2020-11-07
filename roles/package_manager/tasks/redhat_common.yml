@@ -16,34 +16,25 @@
     state: stopped
   ignore_errors: true  #Remove for RHEL
   when: package_management.disable_rhnsd and ansible_distribution != "Fedora"
-  tags:
-    - DISABLE_RHNSD
 
 # GPGKeys are used to sign packages. Enabling them will mean that all packages
 #  from a given repo must be signed with the appropriate key
 - name: Ensure GPG check is enabled
   block:
+
     # Replace any instances of gpgcheck with a 1 after it to 'gpgcheck = 1'
-    - name: Set master yum.conf gpgcheck to '1'
+    - name: "Set gpgcheck to '1' on {{ pkgmgr_RedHat_conf }} config file"
       replace:
-        dest: /etc/yum.conf
+        dest: "{{ pkgmgr_RedHat_conf }}"
         regexp: '^\s*gpgcheck\s*=\s*([^1]|[1]{2,})\s*$'
         replace: "gpgcheck = 1"
-      when: ansible_distribution != "Fedora"
-
-    - name: Set master dnf.conf gpgcheck to '1'
-      replace:
-        dest: /etc/dnf/dnf.conf
-        regexp: '^\s*gpgcheck\s*=\s*([^1]|[1]{2,})\s*$'
-        replace: "gpgcheck=1"
-      when: ansible_distribution == "Fedora"
 
     # Find all files in /etc/yum.repos.d and add them to a list variable
     - name: find all repo files in /etc/yum.repos.d/
       find:
         paths: "/etc/yum.repos.d"
         patterns: "*.repo"
-      register: yumrepos
+      register: pkgmgr_yumrepos
 
     # sets gpgcheck = 1 on all yum repositories
     # Changes will happen only if gpgcheck is not already 1
@@ -52,36 +43,10 @@
         path: "{{ item.path }}"
         regexp: '^\s*gpgcheck\s*=\s*([^1]|[1]{2,})\s*$'
         replace: gpgcheck = 1
-      with_items: "{{ yumrepos.files }}"
+      with_items: "{{ pkgmgr_yumrepos.files }}"
       loop_control:
         label: "{{ item.path }}"
 
   when: package_management.gpgcheck 
-  tags:
-    - YUM_GPG_CHECK
 
-# Update the system with security packages using the system's package manager
-# Only update the system if the 'update_system' variable is set to true
-- name: Update packages
-  dnf:
-    name: "*"
-    state: latest
-    security: "{{ package_management.security_upd_only }}"
-  when: package_management.update_system
-  tags:
-    - UPDATE_SYSTEM
-
-- name: Install packages
-  dnf:
-    name: "{{ package_management.install_packages }}"
-    state: present
-
-- name: Delete unused packages
-  dnf:
-    name: "{{ package_management.remove_packages }}"
-    state: absent
-
-- name: Autoremove unneeded packages installed as dependencies
-  dnf:
-    autoremove: "{{ package_management.autoremove }}"
 

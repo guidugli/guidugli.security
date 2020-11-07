@@ -1,0 +1,20 @@
+---
+##
+# Instead of worrying with undefined values and setting defaults, do it here in one place.
+##
+
+- name: Initialize variable
+  set_fact:
+    fspart_process_input_var: []
+
+- name: Add missing information with default values
+  set_fact:
+    fspart_process_input_var: "{{ fspart_process_input_var | default([]) + [{ 'name': item.name | default('', true), 'mount_options': item.mount_options | default([]), 'validate_options': item.validate_options | default([]),'autofix': item.autofix | default(false), 'unit_name': item.unit_name }] }}"
+  loop: "{{ partitions }}"
+
+# now overwrite partitions variable with the processed data
+- name: Set final values to partitions variable
+  set_fact:
+    partitions: "{{ fspart_process_input_var }}"
+
+- debug: var=fspart_process_input_var

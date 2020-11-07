@@ -1,0 +1,12 @@
+---
+- name: Converge
+  user: root
+  hosts: all
+  tasks:
+#    - name: update cache
+#      apt:
+#        update_cache: yes
+
+    - name: "Include firewall"
+      include_role:
+        name: "firewall"

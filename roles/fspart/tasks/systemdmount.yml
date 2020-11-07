@@ -14,66 +14,78 @@
   set_fact:
     fspart_unit_notify: "{{ item.unit_name }}"
 
-- name: "Check if {{ item.unit_name }} already exist on /etc/systemd/system"
-  raw: "test -e /etc/systemd/system/{{ item.unit_name }} && echo -n true || echo -n false"
-  register: result
-  failed_when: result.rc != 0
+- name: "Check if {{ item.unit_name }} exists on knwon systemd locations"
+  raw: "test -e {{ fileitem }}"
+  register: fspart_unit_location
   changed_when: false
+  ignore_errors: yes
+  loop:
+    - "{{ fspart_systemd_etc_path }}/{{ item.unit_name }}"
+    - "{{ fspart_systemd_lib_path }}/{{ item.unit_name }}"
+    - "{{ fspart_systemd_share_path }}/{{ item.unit_name }}"
+  loop_control:
+    loop_var: fileitem
 
-- name: Save last operation result as a boolean
+#- debug: var=fspart_unit_location
+
+- name: Storing search results
   set_fact:
-    exists_on_etc_systemd: "{{ result.stdout | bool }}"
+    fspart_systemd_unit_path: "{{ (fspart_unit_location.results | selectattr('rc','equalto',0) | first).fileitem | default('not found') }}"
+    fspart_systemd_unit_found: "{{ (fspart_unit_location.results | selectattr('rc','equalto',0) | first) is defined  }}"
 
-- name: "Copy {{ item.unit_name }} from source location to /etc/systemd/system"
-  vars:
-    unit_file_source_dir: "{{ '/usr/share/systemd' if (ansible_os_family == 'Debian' and item.unit_name == 'tmp.mount') else '/lib/systemd/system' }}"
+- name: "Result:"
+  debug:
+    msg: "Unit {{ item.unit_name }} location: {{ fspart_systemd_unit_path }}"
+
+  # If not exist on etc path, try to copy unit first from ansible controller
+  # then try to copy from systemd locations
+- name: "Copy {{ item.unit_name }} from source locations to {{ fspart_systemd_etc_path }}"
   block:
 
     # First try to copy the unit file from controller
-    - name: "Copy unit file {{ item.unit_name }} from ansible controller"
+    - name: "Try to copy unit file {{ item.unit_name }} from ansible controller"
       copy:
         src: "{{ item.unit_name }}"
-        dest: "/etc/systemd/system/{{ item.unit_name }}"
+        dest: "{{ fspart_systemd_etc_path }}/{{ item.unit_name }}"
         force: no 
         owner: root
         group: root
         mode: '0644'
-        setype: systemd_unit_file_t
-        serole: object_r
-        seuser: system_u
         remote_src: no
       ignore_errors: yes
       no_log: yes
       notify: reload systemd configuration
-      register: copy_result
+      register: fspart_copy_result
+
+    - name: Fail if unit do not exist on ansible controller or on remote host
+      fail: 
+        msg: "Unit {{ item.unit_name }} do not exist on ansible controller or on remote host"
+      when: fspart_copy_result is failed and not fspart_systemd_unit_found
 
     # If it fails (do not exist on the controller) then try to copy it from 
-    # remote host /lib/systemd/system directory
-    - name: "Copy unit file {{ item.unit_name }} from {{ unit_file_source_dir }} to /etc/systemd/system/{{ item.unit_name }} on remote host"
+    # remote host systemd locations
+    - name: "Copying {{ fspart_systemd_unit_path }} to {{ fspart_systemd_etc_path }}/{{ item.unit_name }}"
       copy:
-        src: "{{ unit_file_source_dir }}/{{ item.unit_name }}"
-        dest: "/etc/systemd/system/{{ item.unit_name }}"
+        src:  "{{ fspart_systemd_unit_path }}"
+        dest: "{{ fspart_systemd_etc_path }}/{{ item.unit_name }}"
         force: no
         owner: root
         group: root
         mode: '0644'
-        setype: systemd_unit_file_t
-        serole: object_r
-        seuser: system_u
         remote_src: yes
       notify: reload systemd configuration
-      when: copy_result is failed
+      when: fspart_systemd_unit_found and fspart_copy_result is failed
 
-  when: not exists_on_etc_systemd
+  when: fspart_systemd_unit_path != fspart_systemd_etc_path + '/' + item.unit_name
 
-- name: "Fix values in /etc/systemd/system/{{ item.unit_name }} if required"
+- name: "Fix values in {{ fspart_systemd_etc_path }}/{{ item.unit_name }} if required"
   block:
     
     # Only found this problem on tmp.mount of Fedora 33 but it does not hurt
     # to check on every platform
     - name: "Add missing install section (if needed) for {{ item.unit_name }}"
       ini_file:
-        path: '/etc/systemd/system/{{ item.unit_name }}'
+        path: '{{ fspart_systemd_etc_path }}/{{ item.unit_name }}'
         section: Install
         option: WantedBy
         value: local-fs.target
@@ -84,7 +96,7 @@
 
     - name: "Configure config file options for unit {{ item.unit_name }}"
       lineinfile:
-        path: "/etc/systemd/system/{{ item.unit_name }}"
+        path: "{{ fspart_systemd_etc_path }}/{{ item.unit_name }}"
         regexp: 'Options='
         line: "{{ 'Options=' + (item['mount_options'] | join(',')) }}"
         state: present
@@ -96,9 +108,4 @@
 - name: Force systemd to reload in order to enable it to notice the changes
   meta: flush_handlers
 
-#- name: "Enable and start or restart {{ item.unit_name }}"
-#  systemd:
-#    name: "{{ item.unit_name }}"
-#    enabled: yes
-#    state: "{{ 'restarted' if (copy_result.changed or addinstall_result.changed or (tmp_mount_options and tmp_mount_options.changed)) else 'started' }}"
 

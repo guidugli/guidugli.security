@@ -1,2 +1,5 @@
 ---
 # vars file for sudo
+
+# Regular expression to validate paths
+pathre: '^(?:[\/])$|^(?:[\/][a-zA-Z0-9_.-]+)+[\/]?$'

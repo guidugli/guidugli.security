@@ -1,0 +1,18 @@
+---
+
+- name: Validate input variables.
+  vars:
+    pathre: '^(?:[\/])$|^(?:[\/][a-zA-Z0-9_.-]+)+[\/]?$'
+  assert:
+    quiet: yes
+    that:
+      - item.name is regex(pathre)  # Check if it is a directory
+      - item.autofix | lower in ['true','false']
+      - (item.autofix | bool and item.unit_name is defined) or not (item.autofix | bool)  # need unit file if autofixing it
+      - (item.autofix | bool and item.mount_options is defined and item.mount_options | length > 0) or not (item.autofix | bool)
+    msg: "Invalid value for {{ item.name }}"
+  loop: "{{ partitions }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+

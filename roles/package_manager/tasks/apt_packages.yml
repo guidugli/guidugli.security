@@ -10,16 +10,14 @@
 - name: Update cache
   apt:
     update_cache: yes
-    cache_valid_time: 3600
+    cache_valid_time: "{{ package_management.cache_valid_time }}"
 
 # Update the system with security packages using the system's package manager
 # Only update the system if the 'update_system' variable is set to true
 - name: Update packages
   apt:
-    upgrade: dist
+    upgrade: "{{ package_management.apt_upgrade_command }}"
   when: package_management.update_system
-  tags:
-    - UPDATE_SYSTEM
 
 - name: Install packages
   apt:
@@ -48,15 +46,15 @@
 
 - name: Run command to get apt package repositories
   command: "/usr/bin/apt-cache policy"
-  register: result
+  register: pkgmgr_apt_package_repos
   changed_when: false
-  failed_when: result.rc != 0
+  failed_when: pkgmgr_apt_package_repos.rc != 0
 
 - name: Display package manager repositories (for manual review)
   debug:
     msg:
       - "List of configured apt repositories (apt-cache policy):"
-      - "{{ result.stdout_lines }}"
+      - "{{ pkgmgr_apt_package_repos.stdout_lines }}"
 
 - name: Run command to get list of GPG keys
   command: "/usr/bin/apt-key list"
@@ -69,4 +67,28 @@
     msg:
       - "List of configured keys (apt-key list):"
       - "{{ result.stdout_lines }}"
+
+# If file exists the return code is zero
+- name: Check if reboot is required
+  raw: "test -e /var/run/reboot-required"
+  failed_when: false
+  changed_when: false
+  register: pkgmgr_boot_required
+
+- debug:
+    msg: "System needs rebooting"
+  when: pkgmgr_boot_required.rc == 0
+
+- name: Reboot system
+  reboot:
+    msg: "Reboot initiated by Ansible for updates"
+    connect_timeout: 5
+    reboot_timeout: 300
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
+  when:
+    - package_management.reboot_after_update | bool
+    - pkgmgr_boot_required.rc == 0
+    - ansible_connection != "docker"
 

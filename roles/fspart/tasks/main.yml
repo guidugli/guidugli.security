@@ -1,10 +1,17 @@
 ---
 # tasks file for fspart
 
-- name: Check partition variables
-  import_tasks: pretasks.yml
+- name: Process input variables, adding default values
+  import_tasks: vars_defaults.yml
 
-- name: Run partition checking/configuration tasks
-  import_tasks: fspart.yml
+- name: Check partition variables
+  import_tasks: asserts.yml
+
+- name: Check systemd unit files for each partition with autofix set to true
+  include_tasks: systemdmount.yml
+  loop: "{{ partitions | selectattr('autofix') | list }}"
+
+- name: Validate mount points
+  import_tasks: validate.yml
 
 
