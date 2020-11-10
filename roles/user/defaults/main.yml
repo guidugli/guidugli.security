@@ -1,0 +1,52 @@
+---
+# defaults file for user settings
+
+
+## Password settings ##
+
+# Number of days before password expire
+user_max_days: 365
+
+# Number of days until user is allowed to change password
+user_min_days: 7
+
+# Number of days before user is considered inactive
+user_inactive_days: 30
+
+# Number of days before password expire that will
+# generate a warning to the user
+user_warn_age: 7
+
+# UMASK to be used by all users
+user_umask: '027'
+
+# Shell timeout in seconds
+user_shell_timeout: 900
+
+# Should tasks be executed to fix existing user accounts?
+user_fix_existing_accounts: yes
+
+## OPTIONAL VARIABLES ##
+
+root_password: mypass
+
+user_account_add:
+  - name: carlospg
+    comment: Carlos Guidugli
+    uid: 1076
+#    group: carlospg
+    groups: ['admin']
+    shell: /bin/bash
+    password: encpwd
+
+user_account_remove:
+  - carlospg
+
+user_group_add:
+  - name: admin
+    gid: 760
+  - name: mygroup
+    gid: 1010
+
+user_group_remove:
+  - mygroup

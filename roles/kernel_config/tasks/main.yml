@@ -1,0 +1,38 @@
+---
+# tasks file for sysctl
+
+- name: Validate provided variables and set os dependent variables
+  import_tasks: asserts.yml
+
+- name: Add files on /etc/modprobe.d to disable modules
+  lineinfile:
+    path: "/etc/modprobe.d/{{ item }}.conf"
+    regexp: '^\s*install\s+.+?/bin/true'
+    line: "install {{ item }} /bin/true"
+    state: present
+    create: yes
+    owner: root
+    group: root
+    mode: '0644'
+    setype: modules_conf_t
+    seuser: system_u
+    serole: object_r
+  loop: "{{ kernel_disable_modules }}"
+  notify: reload modules
+
+
+  # Most items are related to network, so call notify flush
+  # network routes in case of any change. Maybe in the future
+  # split this into two tasks, one for network keys and other
+  # for non-network keys.
+- name: Checking sysctl configuration
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    ignoreerrors: no
+    reload: yes
+    sysctl_set: yes
+  loop: "{{ kernel_sysctl }}"
+  notify: flush network routes
+

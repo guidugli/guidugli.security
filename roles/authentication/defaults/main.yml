@@ -1,0 +1,47 @@
+---
+# defaults file for authentication
+
+# Number of days before password expire
+auth_max_days: 365
+
+# Number of days until user is allowed to change password
+auth_min_days: 7
+
+# Number of days before user is considered inactive
+auth_inactive_days: 30
+
+# Number of days before password expire that will
+# generate a warning to the user
+auth_warn_age: 7
+
+# Number of passwords to 'remember' so user
+# cannot set new password as the old passwords
+auth_remember: 5
+
+# Number of login attempts before locking user
+auth_deny_after: 5
+
+# Time, in seconds, to wait before unlocking a locked user
+auth_unlock_time: 900
+
+# Tries before sending back a failure to pwquality
+auth_retry: 3
+
+# Password minimum length
+auth_min_length: 14
+
+# Password complexity rules
+auth_dcredit: -1  # Require at least 1 digit
+auth_ucredit: -1  # Require at least 1 uppercase
+auth_ocredit: -1  # Require at least 1 special char
+auth_lcredit: -1  # Require at least 1 lower case char
+
+
+authselect:
+  enabled: false
+  profile_name: 'site-profile'
+  options:
+    - with-sudo
+    - with-faillock  # Will fail without this option
+    - without-nullok
+

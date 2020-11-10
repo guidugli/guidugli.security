@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  tasks:
+    - name: "Include kernel_config"
+      include_role:
+        name: "kernel_config"

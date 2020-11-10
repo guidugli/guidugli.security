@@ -1,0 +1,6 @@
+---
+# tasks file for authentication
+
+- name: Validate provided variables and set os dependent variables
+  import_tasks: asserts.yml
+
