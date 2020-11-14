@@ -1,0 +1,12 @@
+---
+# defaults file for banner
+
+banner_motd_file: banner.txt
+banner_issue_file: banner.txt
+banner_issuenet_file: banner.txt
+
+## OPTIONAL VARIABLES ##
+
+banner_graphical_msg: "Authorized uses only. All activity may be monitored and reported."
+banner_logo_file_name: greeter-logo.png
+

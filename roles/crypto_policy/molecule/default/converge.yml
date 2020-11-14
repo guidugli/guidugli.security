@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include crypto_policy"
+      include_role:
+        name: "crypto_policy"

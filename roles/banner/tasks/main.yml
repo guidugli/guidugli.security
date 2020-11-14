@@ -1,0 +1,102 @@
+---
+# tasks file for banner
+
+- name: Validate provided variables and set os dependent variables
+  import_tasks: asserts.yml
+
+# Use copy module to copy in the appropriate files based on variable and set permissions
+- name: Install motd/issue/issue.net  banners
+  copy:
+    src: "{{ item.src }}"
+    dest: "/etc/{{ item.name }}"
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  loop:
+    - { name: motd, src: "{{ banner_motd_file | default('undefined') }}" }
+    - { name: issue, src: "{{ banner_issue_file | default('undefined') }}" }
+    - { name: issue.net, src: "{{ banner_issuenet_file | default('undefined') }}" }
+  when: item.src != 'undefined'
+  tags:
+    - BANNERS_CONFIG
+
+- name: Check if display-manager is installed and running
+  command: "systemctl status display-manager.service"
+  register: banner_display_manager_check
+  failed_when: false
+  changed_when: false
+
+- name: Set has_graphical_inteface to true or false
+  set_fact:
+    has_graphical_inteface: "{{ banner_display_manager_check.rc == 0 }}"
+
+- name: Set banner on GNOME graphical interface
+  block:
+    - name: Create required directories
+      file:
+        path: "{{ item.path }}"
+        state: "{{ item.state }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: '/etc/dconf/db/gdm.d', state: 'directory', mode: '0755' }
+        - { path: '/usr/share/pixmaps/logo', state: 'directory', mode: '0755' }
+
+    - name: Set gdm dconf profile
+      blockinfile:
+        path: /etc/dconf/profile/gdm
+        mode: 0644
+        state: present
+        create: yes
+        owner: root
+        group: root
+        marker: "Ansible managed block"
+        block: |
+          user-db:user
+          system-db:gdm
+          file-db:{{ _greeter_dconf_defaults[ansible_os_family] }}
+
+    - name: Copy logo
+      copy:
+        src: "files/{{ banner_logo_file_name }}"
+        dest: "/usr/share/pixmaps/logo/greeter-logo.png"
+        mode: '0644'
+        owner: root
+        group: root
+        force: yes
+      when: banner_logo_file_name is defined
+      tags:
+        - SET_LOGO
+
+    - name: Configure Logo
+      ini_file:
+        path: /etc/dconf/db/gdm.d/01-logo
+        section: "org/gnome/login-screen"
+        mode: '0644'
+        state: present
+        create: yes
+        option: logo
+        value: "'/usr/share/pixmaps/logo/greeter-logo.png'"
+      notify: update-dconf
+      when: banner_logo_file_name is defined
+      tags:
+        - SET_LOGO
+
+    - name: Configure Greeting Message
+      ini_file:
+        path: /etc/dconf/db/gdm.d/01-banner-message
+        section: "org/gnome/login-screen"
+        mode: '0644'
+        state: present
+        create: yes
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+      notify: update-dconf
+      loop:
+        - { option: "banner-message-enable", value: "true" }
+        - { option: "banner-message-text", value: "'{{ banner_graphical_msg }}'" }
+      when: banner_graphical_msg is defined
+  when: has_graphical_inteface and (banner_graphical_msg is defined or banner_logo_file_name is defined)
+  tags:
+    - GRAPHICAL_BANNER_CONFIG
+

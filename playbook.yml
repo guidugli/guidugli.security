@@ -1,0 +1,6 @@
+- name: MyTest
+  hosts: all
+  become: yes
+  roles:
+    - grub
+

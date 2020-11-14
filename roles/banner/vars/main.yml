@@ -1,0 +1,7 @@
+---
+# vars file for banner
+
+_greeter_dconf_defaults:
+  Debian: /usr/share/gdm/greeter.dconf-defaults
+  RedHat: /usr/share/gdm/greeter-dconf-defaults
+
