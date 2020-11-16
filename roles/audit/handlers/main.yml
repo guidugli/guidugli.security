@@ -1,0 +1,10 @@
+---
+# handlers file for audit
+
+- name: restart auditd
+  service:
+    name: auditd
+    enabled: yes
+    state: restarted
+  when: ansible_virtualization_type not in ['docker', 'lxc']
+

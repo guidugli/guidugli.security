@@ -1,0 +1,56 @@
+---
+
+- name: Ensure logrotate is installed
+  package:
+    name: "{{ logrotate_packages }}"
+    state: present
+
+- name: Check if logrotate.timer exists
+  systemd:
+    name: logrotate.timer
+  register: logrotate_systemd_timer
+  when: ansible_service_mgr == 'systemd'
+
+- name: Ensure logrotate.timer is enabled
+  systemd:
+    name: logrotate.timer
+    state: started
+    enabled: yes
+  when: logrotate_systemd_timer.status.LoadState != 'not-found'
+
+- name: Configure how many weeks worth of backlogs to keep
+  lineinfile:
+    path: "{{ logrotate_conf }}"
+    regex: '^rotate\s+\d+'
+    line: 'rotate {{ logrotate_weeks2keep }}'
+    state: present
+    backup: yes
+
+- name: Configure to use date as a suffix of the rotated file
+  lineinfile:
+    path: "{{ logrotate_conf }}"
+    regex: '^#?dateext\s*'
+    line: "{{ 'dateext' if logrotate_use_date_extension else '#dateext' }}"
+    state: present
+    backup: yes
+
+- name: Configure to compress or not rotated files
+  lineinfile:
+    path: "{{ logrotate_conf }}"
+    regex: '^#?compress\s*'
+    line: "{{ 'compress' if logrotate_compress else '#compress' }}"
+    state: present
+    backup: yes
+
+- name: "Copy configuration files to {{ logrotated_path }}"
+  copy:
+    src: "{{ ansible_os_family }}/{{ item }}"
+    dest: "{{ logrotated_path }}/{{ item }}"
+    owner: root
+    group: root
+    force: yes
+    mode: 0640
+    backup: yes
+  loop: "{{ logrotate_config_files }}"
+  when: logrotate_config_files is defined
+

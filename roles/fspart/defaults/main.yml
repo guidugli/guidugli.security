@@ -1,6 +1,10 @@
 ---
 # defaults file for fspart
 
+# If set to true, the role will fix any 
+# file that can be written by everyone (others).
+fs_world_writeable_fix_enabled: yes
+
 # List of partitions that must be present on the system
 # and the mount options they should have.
 

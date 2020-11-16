@@ -1,0 +1,10 @@
+---
+
+- name: Validate if variables have valid values
+  assert:
+    that: 
+      - journald_compress is defined
+      - journald_compress | type_debug == 'bool'
+    quiet: yes
+
+

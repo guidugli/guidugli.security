@@ -1,0 +1,21 @@
+/var/log/cron
+/var/log/kernel
+/var/log/localmessages
+/var/log/mail.info
+/var/log/mail.warn
+/var/log/mail.err
+/var/log/maillog
+/var/log/messages
+/var/log/news/news.crit
+/var/log/news/news.err
+/var/log/news/news.notice
+/var/log/secure
+/var/log/spooler
+/var/log/warn
+{
+    missingok
+    sharedscripts
+    postrotate
+        /usr/bin/systemctl kill -s HUP rsyslog.service >/dev/null 2>&1 || true
+    endscript
+}

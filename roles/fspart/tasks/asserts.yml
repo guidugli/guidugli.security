@@ -15,4 +15,10 @@
   loop_control:
     label: "{{ item.name }}"
 
+- name: Validate fs_world_writeable_fix_enabled variable
+  assert:
+    that: 
+      - fs_world_writeable_fix_enabled is defined
+      - fs_world_writeable_fix_enable | type_debug == 'bool'
+    quiet: yes
 

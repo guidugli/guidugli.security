@@ -1,0 +1,14 @@
+---
+
+- name: Assert that variables have valid values
+  assert:
+    that:
+      - logrotate_compress is defined
+      - logrotate_compress | type_debug == 'bool'
+      - logrotate_use_date_extension is defined
+      - logrotate_use_date_extension | type_debug == 'bool'
+      - logrotate_weeks2keep is defined
+      - logrotate_weeks2keep | int > 0
+      - (logrotate_config_files is not defined) or (logrotate_config_files | type_debug == 'list')
+    quiet: yes
+

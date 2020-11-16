@@ -14,4 +14,6 @@
 - name: Validate mount points
   import_tasks: validate.yml
 
+- name: Fix filesystems permissions
+  import_tasks: fix_permissions.yml
 

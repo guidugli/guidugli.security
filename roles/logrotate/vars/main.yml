@@ -1,0 +1,54 @@
+---
+# vars file for logrotate
+
+_logrotate_packages:
+  default: ['logrotate']
+
+logrotate_packages: "{{ _logrotate_packages[ansible_distribution ~ '-' ~ ansible_distribution_major_version] | default(_logrotate_packages[ansible_distribution]) | default(_logrotate_packages['default']) }}"
+
+_logrotate_conf:
+  default: /etc/logrotate.conf
+
+logrotate_conf: "{{ _logrotate_conf[ansible_distribution ~ '-' ~ ansible_distribution_major_version] | default(_logrotate_conf[ansible_distribution]) | default(_logrotate_conf['default']) }}"
+
+_logrotated_path:
+  default: /etc/logrotate.d
+
+logrotated_path: "{{ _logrotated_path[ansible_distribution ~ '-' ~ ansible_distribution_major_version] | default(_logrotated_path[ansible_distribution]) | default(_logrotated_path['default']) }}"
+
+_logrotate_files_to_copy:
+  Debian:
+    - alternatives
+    - apport
+    - apt  
+    - bootlog
+    - btmp
+    - dpkg
+    - rsyslog
+    - ubuntu-advantage-tools
+    - ufw
+    - unattended-upgrades
+    - wtmp
+  RedHat:
+    - bootlog
+    - btmp
+    - chrony
+    - cups
+    - dnf
+    - firewalld
+    - glusterfs
+    - httpd
+    - iscsiuiolog
+    - libvirtd
+    - libvirtd.qemu
+    - numad
+    - ppp
+    - psacct
+    - rsyslog
+    - samba
+    - sssd
+    - wpa_supplicant
+    - wtmp
+
+logrotate_files_to_copy: "{{ _logrotate_files_to_copy[ansible_os_family] | default([]) }}"
+

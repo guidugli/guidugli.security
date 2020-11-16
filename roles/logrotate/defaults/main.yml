@@ -1,0 +1,21 @@
+---
+# defaults file for logrotate
+
+# Specify the files to be copied to logrotate.d directory
+# This variable is optional
+logrotate_config_files: "{{ logrotate_files_to_copy }}"
+
+# NOTICE: these settings apply only to global
+#         configuration on logrotate.conf file.
+
+# Set to true/yes to set default configuration to 
+# compress rotated files
+logrotate_compress: no
+
+# Set to true/yes to use date extension on file
+# name, instead of just numbers
+logrotate_use_date_extension: yes
+
+# Set the number of weeks to keep rotated logs
+logrotate_weeks2keep: 24
+

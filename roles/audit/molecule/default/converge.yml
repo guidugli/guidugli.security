@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: update cache
+      apt:
+        update-cache: yes
+    - name: "Include audit"
+      include_role:
+        name: "audit"
