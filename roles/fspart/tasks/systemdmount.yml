@@ -47,7 +47,7 @@
       copy:
         src: "{{ item.unit_name }}"
         dest: "{{ fspart_systemd_etc_path }}/{{ item.unit_name }}"
-        force: no 
+        force: no
         owner: root
         group: root
         mode: '0644'
@@ -58,7 +58,7 @@
       register: fspart_copy_result
 
     - name: Fail if unit do not exist on ansible controller or on remote host
-      fail: 
+      fail:
         msg: "Unit {{ item.unit_name }} do not exist on ansible controller or on remote host"
       when: fspart_copy_result is failed and not fspart_systemd_unit_found
 
@@ -80,7 +80,7 @@
 
 - name: "Fix values in {{ fspart_systemd_etc_path }}/{{ item.unit_name }} if required"
   block:
-    
+
     # Only found this problem on tmp.mount of Fedora 33 but it does not hurt
     # to check on every platform
     - name: "Add missing install section (if needed) for {{ item.unit_name }}"
@@ -90,7 +90,8 @@
         option: WantedBy
         value: local-fs.target
         no_extra_spaces: yes
-      notify: 
+        mode: '0644'
+      notify:
         - reload systemd configuration
         - restart systemd unit
 
@@ -100,12 +101,10 @@
         regexp: 'Options='
         line: "{{ 'Options=' + (item['mount_options'] | join(',')) }}"
         state: present
-      notify: 
+      notify:
         - reload systemd configuration
         - restart systemd unit
 
 
 - name: Force systemd to reload in order to enable it to notice the changes
   meta: flush_handlers
-
-

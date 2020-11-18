@@ -35,4 +35,3 @@
     sysctl_set: yes
   loop: "{{ kernel_sysctl }}"
   notify: flush network routes
-

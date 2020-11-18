@@ -80,4 +80,3 @@
     - firewall_services is defined
     - item.zone is defined
     - firewall_selected == 'firewalld'
-

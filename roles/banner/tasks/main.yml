@@ -22,14 +22,14 @@
     - BANNERS_CONFIG
 
 - name: Check if display-manager is installed and running
-  command: "systemctl status display-manager.service"
+  systemd:
+    name: display-manager.service
   register: banner_display_manager_check
-  failed_when: false
-  changed_when: false
+  when: ansible_service_mgr == 'systemd'
 
 - name: Set has_graphical_inteface to true or false
   set_fact:
-    has_graphical_inteface: "{{ banner_display_manager_check.rc == 0 }}"
+    has_graphical_inteface: "{{ banner_display_manager_check.status.LoadState | default('not-found') != 'not-found' }}"
 
 - name: Set banner on GNOME graphical interface
   block:
@@ -99,4 +99,3 @@
   when: has_graphical_inteface and (banner_graphical_msg is defined or banner_logo_file_name is defined)
   tags:
     - GRAPHICAL_BANNER_CONFIG
-

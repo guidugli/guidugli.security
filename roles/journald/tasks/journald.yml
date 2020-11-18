@@ -7,11 +7,11 @@
   changed_when: false
   failed_when: rsyslog_forward_out.rc == "2"
 
-- debug: var=rsyslog_forward_out
+#- debug: var=rsyslog_forward_out
 
 - name: Forward journald logs to rsyslog IF rsyslog is sending logs to a log host
   vars:
-    rsyslog_forwarding: "{{ rsyslog_forward_out.stdout != '' }}"
+    rsyslog_forwarding: "{{ rsyslog_forward_out.stdout | length > 0 }}"
     str: "{{ 'yes' if rsyslog_forwarding else 'no' }}"
   lineinfile:
     dest: "{{ journald_conf_path }}"
@@ -31,5 +31,3 @@
     dest: "{{ journald_conf_path }}"
     regexp: "^#?Storage=.*$"
     line: "Storage=persistent"
-
-

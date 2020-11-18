@@ -19,12 +19,14 @@ _selinux_requirements:
     - python3-policycoreutils
     - "selinux-policy-{{ selinux_policy }}"
   Debian-testing:
-    - auditd
+    - selinux-basics
+    - selinux-utils
     - python3-selinux
     - python3-semanage
     - policycoreutils
   Debian:
-    - auditd
+    - selinux-basics
+    - selinux-utils
     - python3-selinux
     - python3-semanage
     - selinux-policy-default
@@ -35,7 +37,8 @@ _selinux_requirements:
     - python3-selinux
     - "selinux-policy-{{ selinux_policy }}"
   Ubuntu-16:
-    - auditd
+    - selinux-basics
+    - selinux-utils
     - python-selinux
     - python-semanage
     - selinux-policy-default

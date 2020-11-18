@@ -14,4 +14,3 @@
 
 - name: Configure pwquality.conf
   include_tasks: pwquality.yml
-

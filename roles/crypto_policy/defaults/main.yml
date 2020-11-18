@@ -13,4 +13,3 @@ crypto_policy: FUTURE
 
 # If policy is updated, reboot the target device?
 crypto_reboot_after_update: yes
-

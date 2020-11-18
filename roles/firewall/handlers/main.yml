@@ -15,7 +15,7 @@
   listen: reload firewall
   when:
     - ansible_connection != "docker"
-    - firewall_ipv6_service_name != 'unavailable' 
+    - firewall_ipv6_service_name != 'unavailable'
 
 - name: reload firewalld
   command: firewall-cmd --reload

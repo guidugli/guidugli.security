@@ -32,4 +32,3 @@ sudo_cmd_use_pty: yes
 #      * To separate “root path” and “user path”, only users 
 #        defined by exempt_group are not affected by this setting.
 #sudo_secure_path: '/sbin:/bin:/usr/sbin:/usr/bin'
-

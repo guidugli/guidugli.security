@@ -1,17 +1,23 @@
 ---
 
 - name: Check grub GRUB_CMDLINE_LINUX line args
-  shell: 'grep {{ grub_cmdline_var_name }}= {{ grub_default_path }} | cut -d= -f2- | tr -d \"'
+  shell: |
+    set -o pipefail
+    grep {{ grub_cmdline_var_name }}= {{ grub_default_path }} | cut -d= -f2- | tr -d \"
+  args:
+    executable: /bin/bash
   register: grub_current_cmdline
   changed_when: false
 
 - name: Transform retrieved option as a list of options
   set_fact:
-    grub_current_options: "{{ grub_current_cmdline.stdout.split() | map('regex_escape') | list | default([], true) }}"
+    grub_current_options: "{{ grub_current_cmdline.stdout.split() | default([], true) | list }}"
 
 - name: Transform retrieved options from list to dict
   set_fact:
-    grub_current_options_dict: "{{ grub_current_options_dict | default([]) + [{ 'option': item.split('=') | first, 'value': item.split('=')[1] | default('') }] }}"
+    grub_current_options_dict: >
+      {{ grub_current_options_dict | default([]) +
+       [{ 'option': item.split('=') | first, 'value': item.split('=')[1] | default('') }] }}
   loop: "{{ grub_current_options }}"
 
 - name: Define options to be added and removed
@@ -58,11 +64,10 @@
 - name: Add options
   vars:
     record: "{{ grub_options_present | selectattr('option','equalto', item) | flatten | first }}"
-    str: "{{ record.option + (('=' + record.value|string) if (record.value is defined and record.value != '') else '') }}"
+    str: "{{ record.option + (('=' + record.value|string) if (record.value is defined and (record.value | length > 0)) else '') }}"
   replace:
     path: "{{ grub_default_path }}"
     regexp: '^{{ grub_cmdline_var_name }}="'
     replace: '{{ grub_cmdline_var_name }}="{{ str }} '
   loop: "{{ grub_options_to_add }}"
   notify: update grub
-

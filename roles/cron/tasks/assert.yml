@@ -104,4 +104,3 @@
     quiet: yes
   loop: "{{ cron_allowed_users }}"
   when: cron_allowed_users is defined
-

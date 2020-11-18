@@ -9,5 +9,3 @@
   loop: "{{ user_critical_files_perms[ansible_os_family] }}"
   loop_control:
     label: "{{ item.name }}"
-
-

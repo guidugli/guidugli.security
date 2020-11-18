@@ -31,22 +31,19 @@ user_fix_existing_accounts: yes
 root_password: mypass
 
 user_account_add:
-  - name: carlospg
-    comment: Carlos Guidugli
+  - name: example
+    comment: This is an example
     uid: 1076
-#    group: carlospg
     groups: ['admin']
     shell: /bin/bash
     password: encpwd
 
 user_account_remove:
-  - carlospg
+  - removeme
 
 user_group_add:
   - name: admin
     gid: 760
-  - name: mygroup
-    gid: 1010
 
 user_group_remove:
   - mygroup

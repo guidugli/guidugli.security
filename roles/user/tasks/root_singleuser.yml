@@ -32,4 +32,3 @@
     msg: "Root password is not set and no password provided. Set root_password variable per instructions and restart playbook."
   failed_when: true
   when: root_pw_check.found and root_password is not defined
-

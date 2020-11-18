@@ -10,7 +10,7 @@
       - rsyslog_port is defined
       - rsyslog_port | int(-1) > 0
     quiet: yes
-      
+
 - name: Check send to log host variables if rsyslog_log_server is defined
   assert:
     that:
@@ -25,4 +25,3 @@
       - rsyslog_queue_filename | length > 0
     quiet: yes
   when: rsyslog_log_server is defined
-

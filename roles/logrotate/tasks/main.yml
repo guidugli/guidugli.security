@@ -6,4 +6,3 @@
 
 - name: include logrotate.yml
   include_tasks: logrotate.yml
-

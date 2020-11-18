@@ -14,5 +14,3 @@ package_management:
   install_packages: "{{ default_packages['install']['COMMON'] | default([], true) + default_packages['install'][ansible_os_family] | default([], true) }}"
   remove_packages: "{{ default_packages['remove']['COMMON'] | default([], true) + default_packages['remove'][ansible_os_family] | default([], true) }}"
   reboot_after_update: no       # Should the system be rebooted after update?
-
-

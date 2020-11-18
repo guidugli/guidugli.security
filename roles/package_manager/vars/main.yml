@@ -11,11 +11,11 @@ int_default_value: -1
 # These are packages suggested from CIS
 default_packages:
   remove:
-    COMMON: ['cups','mcstrans','rpcbind','rsync','samba','squid','telnet','unbound','vsftdp','xinetd','yp-tools']
-    RedHat: ['avahi','bind','dhcp-server','dovecot','httpd','net-snmp','nfs-utils','openldap-clients',
-             'openldap-servers','rsync-daemon','setroubleshoot','telnet-server','tftp-server','ypbind','ypserv']
-    Debian: ['apache2','atftpd','avahi-daemon','bind9','dovecot-core','ftpd','fusecram','isc-dhcp-server','lsyncd',
-             'nfs-common','proftpd','pure-ftpd','pure-ftpd','slapd','snmpd','squashfuse','telnetd','tftpd','twoftpd',
+    COMMON: ['cups', 'mcstrans', 'rpcbind', 'rsync', 'samba', 'squid', 'telnet', 'unbound', 'vsftdp', 'xinetd', 'yp-tools']
+    RedHat: ['avahi', 'bind', 'dhcp-server', 'dovecot', 'httpd', 'net-snmp', 'nfs-utils', 'openldap-clients',
+             'openldap-servers', 'rsync-daemon', 'setroubleshoot', 'telnet-server', 'tftp-server', 'ypbind', 'ypserv']
+    Debian: ['apache2', 'atftpd', 'avahi-daemon', 'bind9', 'dovecot-core', 'ftpd', 'fusecram', 'isc-dhcp-server', 'lsyncd',
+             'nfs-common', 'proftpd', 'pure-ftpd', 'pure-ftpd', 'slapd', 'snmpd', 'squashfuse', 'telnetd', 'tftpd', 'twoftpd',
              'prelink']
   install:
     COMMON:
@@ -31,8 +31,7 @@ os_family_pkg_map:
     RedHat: ['iptables-services']
   audit:
     Debian: ['auditd']
-    RedHat: ['audit','audit-libs']
+    RedHat: ['audit', 'audit-libs']
   selinux:
-    Debian: ['selinux-basics','selinux-utils','policycoreutils']
-    RedHat: ['selinux-policy-targeted','libselinux-utils','policycoreutils']
-
+    Debian: ['selinux-basics', 'selinux-utils', 'policycoreutils']
+    RedHat: ['selinux-policy-targeted', 'libselinux-utils', 'policycoreutils']

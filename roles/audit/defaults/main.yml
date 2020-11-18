@@ -12,4 +12,3 @@ force_overwrite_audit: true
 
 # If sudo role is defined, get value from there
 audit_sudo_log: "{{ sudo_log | default('/var/log/sudo.log') }}"
-

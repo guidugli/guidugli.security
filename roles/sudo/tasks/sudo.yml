@@ -15,6 +15,7 @@
     regexp: '^Defaults\s*use_pty'
     line: "Defaults use_pty"
     create: yes
+    mode: '0400'
     state: "{{ sudo_cmd_use_pty | bool | ternary('present','absent') }}"
     validate: /usr/sbin/visudo -cf %s
   when: sudo_cmd_use_pty is defined
@@ -25,6 +26,7 @@
     path: "/etc/sudoers.d/{{ sudo_config_file_name }}"
     regexp: '^Defaults\s+(log_host,\s*log_year,)?\slogfile='
     line: 'Defaults log_host, log_year, logfile={{ sudo_log }}'
+    mode: '0400'
     create: yes
     validate: /usr/sbin/visudo -cf %s
   when: sudo_log is defined
@@ -34,7 +36,7 @@
     path: "/etc/sudoers.d/{{ sudo_config_file_name }}"
     regexp: '^Defaults\s+secure_path='
     line: 'Defaults secure_path="{{ sudo_secure_path }}"'
+    mode: '0400'
     create: yes
     validate: /usr/sbin/visudo -cf %s
   when: sudo_secure_path is defined
-

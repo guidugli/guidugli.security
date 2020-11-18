@@ -14,13 +14,13 @@
 # RedHat systems include rsyslog.d configuration then
 # set logging configuration AFTER. This new config
 # file have the include at the end of the file
-- name: Copy new configuration file 
+- name: Copy new configuration file
   copy:
     src: "rsyslog_{{ ansible_os_family }}.conf"
     dest: "{{ rsyslog_conf_path }}"
-    mode: 644
     owner: root
     group: root
+    mode: '0644'
     force: yes
     backup: yes
 
@@ -29,6 +29,7 @@
     path: "{{ rsyslog_conf_path }}"
     regexp: '^\$FileCreateMode\s+'
     line: "$FileCreateMode 0640"
+    mode: '0644'
     create: yes
     state: present
 
@@ -40,7 +41,7 @@
     owner: root
     group: root
     force: yes
-    mode: 0640
+    mode: '0640'
     backup: yes
   when: rsyslog_file is defined
 
@@ -49,8 +50,9 @@
     path: "{{ rsyslogd_path }}/01-Forward.conf"
     regexp: '^\*\.\*\saction\(type="omfwd"'
     create: yes
+    mode: '0640'
     line: >
-      *.* action(type="omfwd" target="{{ rsyslog_log_server }}" port="{{ rsyslog_port }}" protocol="tcp" 
+      *.* action(type="omfwd" target="{{ rsyslog_log_server }}" port="{{ rsyslog_port }}" protocol="tcp"
       action.resumeRetryCount="{{ rsyslog_retry_count }}" queue.type="linkList" queue.maxdiskspace="{{ rsyslog_max_disk_space }}"
       queue.saveonshutdown="{{ rsyslog_save_on_shutdown }}" queue.filename="{{ rsyslog_queue_filename }}")
     state: present
@@ -142,9 +144,6 @@
         owner: root
         group: root
         mode: 0644
-  when: rsyslog_enable_log_host 
+  when: rsyslog_enable_log_host
   tags:
     - RSYSLOG_LOG_HOSTS
-
-
-

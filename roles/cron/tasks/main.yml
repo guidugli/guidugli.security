@@ -68,8 +68,8 @@
     owner: root
     group: root
 
-- name: Add users to cron.allow 
-  lineinfile: 
+- name: Add users to cron.allow
+  lineinfile:
     path: /etc/cron.allow
     create: yes
     owner: root

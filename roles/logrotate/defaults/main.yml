@@ -18,4 +18,3 @@ logrotate_use_date_extension: yes
 
 # Set the number of weeks to keep rotated logs
 logrotate_weeks2keep: 24
-

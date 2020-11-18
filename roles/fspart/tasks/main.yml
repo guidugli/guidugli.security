@@ -16,4 +16,3 @@
 
 - name: Fix filesystems permissions
   import_tasks: fix_permissions.yml
-

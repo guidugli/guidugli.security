@@ -19,5 +19,3 @@
 
 - name: Search/Fix/Report users with invalid settings
   include_tasks: fix_users.yml
-
-

@@ -17,8 +17,8 @@
     new_control: required
     new_module_path: pam_tally2.so
     module_arguments: 'onerr=fail
-      audit 
-      silent 
+      audit
+      silent
       deny={{ auth_deny_after | default(5,true) | int(5) }}
       unlock_time={{ auth_unlock_time | default(900,true) | int(900) }}'
     state: before
@@ -51,8 +51,8 @@
   pamd:
     name: common-password
     type: password
-    control: '[success=1 default=ignore]'
-    module_path: pam_unix.so
+    control: 'requisite'
+    module_path: pam_pwquality.so
     new_type: password
     new_control: required
     new_module_path: pam_pwhistory.so
@@ -90,7 +90,7 @@
 - name: Ensure access to the su command is restricted
   block:
     - name: "Ensure group {{ auth_su_group }} exists"
-      group: 
+      group:
         name: "{{ auth_su_group }}"
         state: present
 
@@ -108,4 +108,3 @@
         append: yes
   tags:
     - su_restrict
-

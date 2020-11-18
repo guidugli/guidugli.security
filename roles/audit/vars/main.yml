@@ -2,10 +2,10 @@
 # vars file for audit
 
 _audit_packages:
-  default: ['auditd','audispd-plugins']
-  RedHat: ['audit','audit-libs']
-  CentOS: ['audit','audit-libs']
-  Fedora: ['audit','audit-libs']
+  default: ['auditd', 'audispd-plugins']
+  RedHat: ['audit', 'audit-libs']
+  CentOS: ['audit', 'audit-libs']
+  Fedora: ['audit', 'audit-libs']
 
 audit_packages: "{{ _audit_packages[ansible_distribution ~ '-' ~ ansible_distribution_major_version] | default(_audit_packages[ansible_distribution]) | default(_audit_packages['default']) }}"
 

@@ -16,6 +16,3 @@
     - { name: 'ucredit', value: "{{ auth_ucredit | default(-1, true) | int(-1) }}" }
     - { name: 'ocredit', value: "{{ auth_ocredit | default(-1, true) | int(-1) }}" }
     - { name: 'lcredit', value: "{{ auth_lcredit | default(-1, true) | int(-1) }}" }
-    
-
-

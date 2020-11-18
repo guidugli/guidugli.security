@@ -29,4 +29,3 @@ rsyslog_save_on_shutdown: 'on'
 
 # unique name prefix for spool files
 rsyslog_queue_filename: 'fwdRule1'
-

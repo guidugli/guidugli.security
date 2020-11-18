@@ -4,7 +4,7 @@
 # Use the variable below to list the kernel
 # modules that should be disabled
 # you might add usb-storage to the list but this will prevent any usb storage device from working. Consider using USBGuard.
-kernel_disable_modules: ['cramfs','freevxfs','jjfs2','hfs','hfsplus','udf','vfat','squashfs']
+kernel_disable_modules: ['cramfs', 'freevxfs', 'jjfs2', 'hfs', 'hfsplus', 'udf', 'vfat', 'squashfs']
 
 kernel_sysctl:
   - { name: fs.suid_dumpable, value: "0" }
@@ -36,4 +36,3 @@ kernel_sysctl:
 # If set to yes, it will set net.ipv4.route.flush and
 # net.ipv6.route.flush settings to 1 and reload
 kernel_sysctl_flush_network_routes: yes
-

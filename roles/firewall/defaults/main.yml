@@ -66,6 +66,3 @@ firewall_services:
     action: deny
   - name: dhcpv6-client
     action: deny
-
-
-

@@ -28,4 +28,3 @@
   apk:
     name: "{{ package_management.remove_packages }}"
     state: absent
-

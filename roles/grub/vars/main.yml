@@ -26,3 +26,4 @@ _grub_cmdline_var_name:
  
 grub_cmdline_var_name: "{{ _grub_cmdline_var_name[ansible_os_family] | default(_grub_cmdline_var_name['default']) }}"
 
+grub_d_path: /etc/grub.d

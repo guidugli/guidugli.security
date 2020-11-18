@@ -6,4 +6,3 @@
 
 - name: include rsyslog.yml
   include_tasks: rsyslog.yml
-

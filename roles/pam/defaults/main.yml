@@ -44,5 +44,3 @@ auth_dcredit: -1  # Require at least 1 digit
 auth_ucredit: -1  # Require at least 1 uppercase
 auth_ocredit: -1  # Require at least 1 special char
 auth_lcredit: -1  # Require at least 1 lower case char
-
-

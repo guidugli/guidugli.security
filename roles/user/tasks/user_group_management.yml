@@ -47,4 +47,3 @@
     remove: yes
   loop: "{{ user_account_remove }}"
   when: user_account_remove is defined
-

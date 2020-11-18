@@ -6,4 +6,3 @@
 
 - name: include journald.yml
   include_tasks: journald.yml
-

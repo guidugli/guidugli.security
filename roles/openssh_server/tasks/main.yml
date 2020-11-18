@@ -6,4 +6,3 @@
 
 - name: Import tasks to configure SSH Server
   import_tasks: sshd.yml
-

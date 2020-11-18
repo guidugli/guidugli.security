@@ -7,7 +7,7 @@ _firewalld_info:
   service_name:
     default: firewalld
   conflicting_services:
-    default: ['ufw','iptables','ip6tables','nftables']
+    default: ['ufw', 'iptables', 'ip6tables', 'nftables']
   actions_map:
     allow: enabled
     accept: enabled
@@ -21,7 +21,7 @@ _ufw_info:
   service_name:
     default: ufw
   conflicting_services:
-    default: ['firewalld','iptables','ip6tables','nftables']
+    default: ['firewalld', 'iptables', 'ip6tables', 'nftables']
   actions_map:
     allow: allow
     deny: deny
@@ -37,7 +37,7 @@ _iptables_info:
   ipv6_service_name:
     default: ip6tables
   conflicting_services:
-    default: ['firewalld','ufw','nftables']
+    default: ['firewalld', 'ufw', 'nftables']
   actions_map:
     allow: allow
     deny: deny

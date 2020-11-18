@@ -22,4 +22,3 @@ fspart_systemd_share_path: /usr/share/systemd
 # unit name being processed so handler can work on the 
 # correct mount unit file.
 fspart_unit_notify: ''
-

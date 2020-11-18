@@ -2,7 +2,7 @@
 # tasks file for audit
 
 - name: Install audit packages
-  package: 
+  package:
     name: "{{ audit_packages }}"
     state: present
 
@@ -28,7 +28,7 @@
 - name: Error message
   fail:
     msg: ">>>> ERROR: Use grub role to add audit=1 option into cmdline <<<<"
-  when: 
+  when:
     - ansible_virtualization_type not in ['docker', 'lxc']
     - not audit_exist.found
 
@@ -46,17 +46,22 @@
 - name: Error message
   fail:
     msg: ">>>> ERROR: Use grub role to add audit_backlog_limit option into cmdline <<<<"
-  when: 
+  when:
     - ansible_virtualization_type not in ['docker', 'lxc']
     - not audit_exist.found
 
 - name: Get min_uid for the system
-  shell: 'grep -E "^UID_MIN\s" /etc/login.defs | awk ''{ print $2 }'''
+  shell: |
+    set -o pipefail
+    grep -E "^UID_MIN\s" /etc/login.defs | awk '{ print $2 }'
+  args:
+    executable: /bin/bash
   register: audit_uid_min_cmd
   changed_when: false
 
-- set_fact:
-    audit_uid_min: "{{ audit_uid_min_cmd.stdout | default(1000, true) }}"    
+- name: Set audit_uid_min variable with the result of last task
+  set_fact:
+    audit_uid_min: "{{ audit_uid_min_cmd.stdout | default(1000, true) }}"
 
 - name: Configure audit log storage size
   replace:
@@ -110,6 +115,5 @@
 - name: Rename audit.rules if it exists
   raw: "test -e {{ audit_rulesd_path }}/audit.rules && mv -f {{ audit_rulesd_path }}/audit.rules {{ audit_rulesd_path }}/audit.rules.old"
   register: audit_cmd_result
-  failed_when: audit_cmd_result.stderr != ''
+  failed_when: audit_cmd_result.stderr | length > 0
   changed_when: audit_cmd_result.rc == 0
-

@@ -138,7 +138,7 @@
         name: "{{ auth_su_group }}"
         state: present
 
-    - name: Ensure pam.d/su file has pam_wheel enabled 
+    - name: Ensure pam.d/su file has pam_wheel enabled
       lineinfile:
         path: /etc/pam.d/su
         regexp: '^\s*#?\s*auth(\s+)required(\s+)pam_wheel.so\s*(use_uid)?\s*(group=.+?)?\s*$'

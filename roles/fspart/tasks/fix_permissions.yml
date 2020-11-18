@@ -19,15 +19,15 @@
       command: >
         find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod g-w,o-rwx "{}" +
       changed_when: true
-      when: fs_cmd_result.stdout != ''
+      when: fs_cmd_result.stdout | length > 0
 
     - name: Verify if the files were indeed corrected
       command: >
         find /var/log -type f -perm /g=xw,o=rwx -ls -o -type d -perm /g=w,o=rwx -ls
       register: fs_cmd_result_fixed
       changed_when: false
-      failed_when: fs_cmd_result_fixed != '' or fs_cmd_result_fixed.rc != 0
-      when: fs_cmd_result.stdout != ''
+      failed_when: fs_cmd_result_fixed.stdout | length > 0 or fs_cmd_result_fixed.rc != 0
+      when: fs_cmd_result.stdout | length > 0
 
   tags:
     - var-log-perm-fix
@@ -35,8 +35,11 @@
 - name: Ensure no world writable files exist
   block:
     - name: Search for world writable files
-      command: >
+      shell: |
+        set -o pipefail
         df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -0002
+      args:
+        executable: /bin/bash
       register: fs_cmd_result
       changed_when: false
 
@@ -48,9 +51,10 @@
           - "---------------------------------------"
 
     - name: Ensure files cannot be written by everyone
-      command: "chown -c o-w {{ item }}"
-      changed_when: true
-      when: fs_cmd_result.stdout != '' and fs_world_writeable_fix_enabled
+      file:
+        path: "{{ item }}"
+        mode: o-w
+      when: (fs_cmd_result.stdout | length > 0) and fs_world_writeable_fix_enabled
       loop: "{{ fs_cmd_result.stdout_lines }}"
 
   tags:
@@ -61,7 +65,11 @@
 - name: Ensure no unowned files exist
   block:
     - name: Find any unowned files
-      shell: "/usr/bin/df --local -P | /usr/bin/awk {' if (NR!=1) print $6'} | /usr/bin/xargs -I '{}' find '{}' -xdev -nouser"
+      shell: |
+        set -o pipefail
+        /usr/bin/df --local -P | /usr/bin/awk {' if (NR!=1) print $6'} | /usr/bin/xargs -I '{}' find '{}' -xdev -nouser
+      args:
+        executable: /bin/bash
       register: fs_cmd_result
       changed_when: false
 
@@ -83,7 +91,12 @@
     iscontainer: "{{ ansible_virtualization_type in ['docker','lxc'] }}"
   block:
     - name: Find any ungrouped files
-      shell: "/usr/bin/df --local -P | /usr/bin/awk {' if (NR!=1) print $6'} | {{ 'grep -vE ^/dev$ |' if iscontainer}} /usr/bin/xargs -I '{}' find '{}' -xdev -nogroup"
+      shell: |
+        set -o pipefail
+        /usr/bin/df --local -P | /usr/bin/awk {' if (NR!=1) print $6'} |
+        {{ 'grep -vE ^/dev$ |' if iscontainer }} /usr/bin/xargs -I '{}' find '{}' -xdev -nogroup
+      args:
+        executable: /bin/bash
       register: fs_cmd_result
       changed_when: false
 
@@ -101,7 +114,11 @@
 - name: List SUID files
   block:
     - name: Find any SUID files
-      shell: "df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -4000 2>/dev/null"
+      shell: |
+        set -o pipefail
+        df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -4000 2>/dev/null
+      args:
+        executable: /bin/bash
       register: fs_cmd_result
       changed_when: false
       failed_when: false
@@ -120,7 +137,11 @@
 - name: List SGID files
   block:
     - name: Find any SGID files
-      shell: "df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -2000 2>/dev/null"
+      shell: |
+        set -o pipefail
+        df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -2000 2>/dev/null
+      args:
+        executable: /bin/bash
       register: fs_cmd_result
       changed_when: false
       failed_when: false
@@ -133,5 +154,3 @@
       when: fs_cmd_result.stdout
   tags:
     - show-sgid-files
-
-

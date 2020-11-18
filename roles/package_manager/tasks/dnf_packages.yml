@@ -61,4 +61,3 @@
     - package_management.reboot_after_update | bool
     - pkgmgr_boot_required.rc != 0
     - ansible_connection != "docker"
-

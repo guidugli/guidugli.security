@@ -61,4 +61,3 @@
     - "{{ user_account_remove | default([]) }}"
     - "{{ user_group_remove | default([]) }}"
   when: user_account_remove is defined or user_group_remove is defined
-

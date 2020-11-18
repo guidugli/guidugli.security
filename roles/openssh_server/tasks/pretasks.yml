@@ -15,7 +15,7 @@
 
 - name: Set default value for non valid integers
   set_fact:
-    int_default_value: -1  
+    int_default_value: -1
 
 # Logging with a DEBUG level violates the privacy of users and is not recommended.
 - name: Set allowed log levels
@@ -47,10 +47,13 @@
 - name: Check if these integer variables are invalid (equal zero)
   assert:
     quiet: yes
-    that: 
+    that:
       - item.value | int(int_default_value) != -1
     msg: "Invalid value for {{ item.key }}. Allowed values are integers starting at 0 (zero)."
-  loop: "{{ sshd_config | dict2items | selectattr('key', 'match', 'port|max_auth_tries|client_alive_interval|client_alive_count_max|login_grace_time|max_sessions') | list }}"
+  loop: >
+    {{ sshd_config | dict2items |
+     selectattr('key', 'match', 'port|max_auth_tries|client_alive_interval|client_alive_count_max|login_grace_time|max_sessions')
+     | list }}
 
 - name: Check if these yes/no values are invalid
   assert:
@@ -74,7 +77,6 @@
       - sshd_config.log_level in valid_sshd_log_level_values
     msg: "Invalid or not allowed SSHD log level specified. Allowed values are: {{ valid_sshd_log_level_values | join(',') }}"
 
-  
 - name: Check if max_startups match 3 groups of int separated by colon
   assert:
     quiet: yes
@@ -94,5 +96,3 @@
     host_keys_group: 'root'
     host_keys_mode: '0600'
   when: ansible_os_family == 'Debian'
-
-

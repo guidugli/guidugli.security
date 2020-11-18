@@ -17,8 +17,7 @@
 
 - name: Validate fs_world_writeable_fix_enabled variable
   assert:
-    that: 
+    that:
       - fs_world_writeable_fix_enabled is defined
-      - fs_world_writeable_fix_enable | type_debug == 'bool'
+      - fs_world_writeable_fix_enabled | type_debug == 'bool'
     quiet: yes
-

@@ -33,7 +33,7 @@
 
 - name: Ensure SSH access is limited
   block:
-    - name: Configure AllowUsers 
+    - name: Configure AllowUsers
       lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: '^\s*AllowUsers\s'
@@ -81,7 +81,7 @@
       register: ssh_host_out
       changed_when: false
 
-    - name: Set permissions on all ssh private host keys 
+    - name: Set permissions on all ssh private host keys
       file:
         path: "{{ item.path }}"
         owner: root
@@ -159,7 +159,7 @@
     label: "{{ item.name }}: {{ item.value }}"
   notify: restart sshd
 
-- name: Setup selinux for alternate SSH port 
+- name: Setup selinux for alternate SSH port
   seport:
     ports: "{{ sshd_config.port }}"
     proto: "tcp"
@@ -193,4 +193,3 @@
 # We run setup to gather facts here once the SSH port is set up.
 - name: Run deferred setup to gather facts
   setup:
-

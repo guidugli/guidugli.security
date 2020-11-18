@@ -35,6 +35,7 @@
 - name: Ensure default shell timeout is {{ user_shell_timeout }}
   blockinfile:
     path: "/etc/profile.d/shell_timeout.sh"
+    mode: '0644'
     block: |
 
       # User will be disconnected after {{ user_shell_timeout }} of inactivity
@@ -51,6 +52,4 @@
     backup: yes
   loop:
     - /etc/profile
-    - /etc/bashrc
-
-
+    - "{{ user_bash_rc_file }}"

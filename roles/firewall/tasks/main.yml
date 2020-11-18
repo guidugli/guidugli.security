@@ -48,4 +48,3 @@
 # Firewalld needs systemd to run, so skip if that is the case
 - name: Run firewall software specific tasks
   include_tasks: "{{ firewall_selected }}.yml"
-

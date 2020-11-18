@@ -31,5 +31,3 @@
     # (A) they are not required by other packages; and 
     # (B) they were not explicitly installed by the user. 
     extra_args: "{{ '--recursive' if package_management.autoremove else '' }}"
-
-

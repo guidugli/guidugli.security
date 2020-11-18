@@ -20,10 +20,9 @@
       - "Valid choices are DEFAULT, FUTURE, and FIPS."
       - "LEGACY selection does not satisfy the control requirement"
       - "Refusing to update crypto_policy information"
-  when: 
+  when:
     - (crypto_policy | upper) not in _available_crypto_policies
 
 - name: Configure/Setup crypto-policy
   include_tasks: setup.yml
   when: enable_crypto_policy
-

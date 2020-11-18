@@ -16,7 +16,9 @@
     name: logrotate.timer
     state: started
     enabled: yes
-  when: logrotate_systemd_timer.status.LoadState != 'not-found'
+  when:
+    - logrotate_systemd_timer is defined
+    - logrotate_systemd_timer.status.LoadState != 'not-found'
 
 - name: Configure how many weeks worth of backlogs to keep
   lineinfile:
@@ -53,4 +55,3 @@
     backup: yes
   loop: "{{ logrotate_config_files }}"
   when: logrotate_config_files is defined
-

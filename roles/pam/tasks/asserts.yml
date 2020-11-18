@@ -17,7 +17,7 @@
 
 - name: Validate authselect_base_profile value
   assert:
-    that: 
+    that:
       - authselect_base_profile is defined
       - authselect_base_profile in ['sssd','minimal','nis','winbind']
     quiet: yes
@@ -49,4 +49,3 @@
     - auth_lcredit
   loop_control:
     label: "{{ item }}: {{ vars[item] | default('undefined') }}"
-

@@ -12,9 +12,8 @@
     quiet: yes
 
 - name: Ensure message is defined for graphical interface
-  assert: 
+  assert:
     that:
       - banner_graphical_msg | length > 0
     quiet: yes
   when: banner_graphical_msg is defined
-

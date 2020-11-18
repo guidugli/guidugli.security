@@ -51,4 +51,3 @@ _logrotate_files_to_copy:
     - wtmp
 
 logrotate_files_to_copy: "{{ _logrotate_files_to_copy[ansible_os_family] | default([]) }}"
-

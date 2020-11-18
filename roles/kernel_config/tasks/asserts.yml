@@ -14,6 +14,7 @@
     that:
       - item.name is defined and (item.name | length > 0)
       - item.value is defined and (item.value | length > 0)
+    quiet: yes
     msg: "Both name and value should be defined."
   loop: "{{ kernel_sysctl | default([], true) }}"
 
@@ -23,4 +24,4 @@
     that:
       - kernel_sysctl_flush_network_routes is defined
       - kernel_sysctl_flush_network_routes | type_debug == 'bool'
-
+    quiet: yes

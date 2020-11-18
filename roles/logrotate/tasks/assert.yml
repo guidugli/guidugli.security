@@ -11,4 +11,3 @@
       - logrotate_weeks2keep | int > 0
       - (logrotate_config_files is not defined) or (logrotate_config_files | type_debug == 'list')
     quiet: yes
-

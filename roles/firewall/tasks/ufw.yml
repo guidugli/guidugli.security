@@ -70,8 +70,8 @@
     rule: allow
     port: "{{ item.1.split('/') | first }}"
     proto: "{{ item.1.split('/') | last }}"
-  when: 
-    - fsrec != 'not_found' 
+  when:
+    - fsrec != 'not_found'
     - ruleaction == 'allow'
   loop: "{{ firewall_service_mapping | subelements('ports') }}"
   loop_control:
@@ -86,14 +86,14 @@
     port: "{{ item.1.split('/') | first }}"
     proto: "{{ item.1.split('/') | last }}"
     delete: yes
-  when: 
-    - fsrec != 'not_found' 
+  when:
+    - fsrec != 'not_found'
     - ruleaction == 'deny'
   loop: "{{ firewall_service_mapping | subelements('ports') }}"
   loop_control:
     label: "Service: {{ item.0.name }}, Port: {{ item.1 }}"
 
-- name: open ports not listed in mapping list 
+- name: open ports not listed in mapping list
   vars:
     ruleaction: "{{ item.action | default(firewall_default_action) }}"
     fsrec: "{{ firewall_service_mapping | selectattr('name', 'equalto', item.name) | first | default('not_found') }}"
@@ -104,11 +104,11 @@
   loop: "{{ firewall_services }}"
   when:
     - fsrec == 'not_found'   # Not in the mapping list
-    - ruleaction == 'allow'  
+    - ruleaction == 'allow'
   loop_control:
     label: "{{ item.name }}"
 
-- name: close ports not listed in mapping list 
+- name: close ports not listed in mapping list
   vars:
     ruleaction: "{{ item.action | default(firewall_default_action) }}"
     fsrec: "{{ firewall_service_mapping | selectattr('name', 'equalto', item.name) | first | default('not_found') }}"
@@ -128,4 +128,3 @@
 - name: enable ufw
   community.general.ufw:
     state: enabled
-

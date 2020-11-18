@@ -95,5 +95,3 @@ _authselect_nis_options:
   - with-pamaccess
   - with-silent-lastlog
   - without-nullok
-
-

@@ -1,6 +1,13 @@
 ---
 # vars file for user
 
+_user_bash_rc_file:
+  default: /etc/bashrc
+  Debian: /etc/bash.bashrc
+  Ubuntu: /etc/bash.bashrc
+
+user_bash_rc_file: "{{ _user_bash_rc_file[ansible_distribution ~ '-' ~ ansible_distribution_major_version] | default(_user_bash_rc_file[ansible_distribution]) | default(_user_bash_rc_file['default']) }}"
+
 # Permissions to set on critical system files
 user_critical_files_perms:
   RedHat:
@@ -65,4 +72,3 @@ user_critical_files_perms:
       mode: '0640'
       owner: root
       group: shadow
-
