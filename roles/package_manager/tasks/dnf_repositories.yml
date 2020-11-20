@@ -1,0 +1,26 @@
+---
+
+- name: Import keys
+  rpm_key:
+    state: present
+    key: "{{ item.key }}"
+  loop: "{{ package_management.repositories_add | selectattr('key', 'defined') | list }}"
+
+- name: Download repository files from url to /etc/yum.repos.d
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/etc/yum.repos.d/{{ item.repofile }}"
+    mode: '0644'
+  loop: "{{ package_management.repositories_add | selectattr('type', 'equalto', 'file') | list }}"
+
+- name: Install repository rpm
+  dnf:
+    name: "{{ item.url }}"
+    state: present
+  loop: "{{ package_management.repositories_add | selectattr('type', 'equalto', 'rpm') | list }}"
+
+- name: Import keys
+  rpm_key:
+    state: present
+    key: "{{ item.key }}"
+  loop: "{{ package_management.repositories_add | selectattr('key', 'defined') | list }}"

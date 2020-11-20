@@ -14,7 +14,7 @@
   set_fact:
     fspart_unit_notify: "{{ item.unit_name }}"
 
-- name: "Check if {{ item.unit_name }} exists on knwon systemd locations"
+- name: "Check if {{ item.unit_name }} exists on known systemd locations"
   raw: "test -e {{ fileitem }}"
   register: fspart_unit_location
   changed_when: false

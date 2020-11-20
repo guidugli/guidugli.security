@@ -22,3 +22,6 @@ fspart_systemd_share_path: /usr/share/systemd
 # unit name being processed so handler can work on the 
 # correct mount unit file.
 fspart_unit_notify: ''
+
+# list of filesystem types allowed to use in fstab
+fspart_allowed_fstype: ['ext', 'ext2', 'ext3', 'ext4', 'vfat', 'cifs', 'fat', 'iso9660', 'ntfs', 'xfs', 'btrfs', 'tmpfs']

@@ -11,7 +11,7 @@
     that:
       - (item.value | lower) in ['true','false']
     msg: "Invalid value for {{ item.key }}. Allowed values are 'yes', 'no', 'true', 'false'."
-  loop: "{{ package_management | dict2items | selectattr('key', 'match', 'apk_upgrade_available|update_system|security_only|gpgcheck|disable_rhnsd') | list }}"
+  loop: "{{ package_management | dict2items | selectattr('key', 'equalto', 'apk_upgrade_available|update_system|security_only|gpgcheck|disable_rhnsd') | list }}"
 
 - name: Check integer variables
   assert:
@@ -28,37 +28,21 @@
       - package_management.apt_upgrade_command in ['dist','full','safe','yes']
     msg: "Invalid value for upgrade_command. Valid values are 'dist','full','safe' and 'yes'"
 
-
-#- name: Check if firewall selection is valid
+#- name: Check repositores_add information
 #  assert:
 #    quiet: yes
 #    that:
-#      - system_features.firewall_enabled and
-#        (firewall_settings.firewall_package in ['firewalld','iptables']) or
-#        (firewall_settings.firewall_package == 'ufw' and ansible_os_family == "Debian")
-#    msg: "Firewall feature is enabled but firewall package name is invalid."
-
-#- name: Add required packages based on feature selection
-#  block:
-
-#    - name: Add selinux packaged
-#      set_fact:
-#        feature_packages: "{{ feature_packages | default([]) + item.packages }}"
-#      when: item.enabled
-#      loop:
-#        - { packages: "{{ package_name['selinux'][ansible_os_family] }}", enabled: "{{ system_features.selinux_enabled }}" }
-#        - { packages: ['sudo'], enabled: "{{ system_features.sudo_enabled }}" }
-#        - { packages: ['chrony'], enabled: "{{ system_features.chrony_enabled }}" }
-#        - { packages: ['openssh-server'], enabled: "{{ system_features.ssh_enabled }}" }
-#        - { packages: "{{ package_name['audit'][ansible_os_family] }}", enabled: "{{ system_features.audit_enabled }}" }
-#        - { packages: ['rsyslog'], enabled: "{{ system_features.rsyslog_enabled }}" }
-#        - { packages: ['aide'], enabled: "{{ system_features.aide_enabled }}" }
-#        - { packages: "{{ package_name['iptables'][ansible_os_family] if (firewall_package == 'iptables') else [firewall_package] }}", enabled: "{{ system_features.firewall_enabled }}" }
-
-#    - name: Add feature packages to package_management.install_packages variable
-#      set_fact:
-#        package_management: "{{ package_management | default([], true) | combine({'install_packages': feature_packages}) }}"
-
-
-# There is no pre-defined/hard-coded package removal as admins might want to leave
-# considered 'non-secure' software installed
+#      - item.name is defined
+#      - item.name | length > 0
+#      - item.type is defined
+#      - item.type in ['file', 'rpm']
+#      - item.url is defined
+#      - item.url | length > 0
+#      - item.key is not defined or (item.key | length > 0)
+#      - item.type != 'file' or (item.repofile is defined and item.repofile | length > 0)
+#  loop: "{{ package_management.repositories_add }}"
+#  loop_control:
+#    label: "{{ item.name | default('undefined') }}"
+#  when:
+#    - repositories_add is defined
+#    - repositories_add | length > 0

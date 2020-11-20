@@ -3,6 +3,16 @@
   hosts: all
   tasks:
 
+    - name: Create fstab file
+      file:
+        path: /etc/fstab
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+        mode: '0644'
+        owner: root
+        group: root
+
     - name: "Include fspart"
       include_role:
         name: "fspart"

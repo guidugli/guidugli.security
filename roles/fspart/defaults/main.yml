@@ -33,8 +33,14 @@ partitions:
 #  - name: /var
 #  - name: /var/log
 #  - name: /var/log/audit
-#  - name: /var/tmp
-#    options: ['nodev', 'nosuid', 'noexec']
+  - name: /var/tmp
+    options: ['nodev', 'nosuid', 'noexec']
+    unit_name: fstab
+    mount_options: ['strictatime', 'nodev', 'nosuid', 'noexec']
+    validate_options: ['nodev', 'nosuid', 'noexec']
+    src: 'tmpfs'
+    fstype: tmpfs
+    autofix: yes
 #  - name: /home
 #    options: ['nodev']
 #  - name: /dev/shm

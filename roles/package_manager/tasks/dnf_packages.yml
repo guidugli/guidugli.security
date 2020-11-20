@@ -12,6 +12,12 @@
 - name: Import tasks to perform common dnf/yum verification
   include_tasks: redhat_common.yml
 
+#- name: Import tasks to add repositories
+#  include_tasks: dnf_repositories.yml
+#  when:
+#    - package_management.repositories_add is defined
+#    - package_management.repositories_add | length > 0
+
 - name: Install dnf-utils
   dnf:
     name: dnf-utils

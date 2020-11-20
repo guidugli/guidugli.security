@@ -46,5 +46,6 @@
       with_items: "{{ pkgmgr_yumrepos.files }}"
       loop_control:
         label: "{{ item.path }}"
+      when: item.path not in (package_management.gpgcheck_excludes | default([]))
 
   when: package_management.gpgcheck

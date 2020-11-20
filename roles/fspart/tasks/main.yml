@@ -7,9 +7,18 @@
 - name: Check partition variables
   import_tasks: asserts.yml
 
-- name: Check systemd unit files for each partition with autofix set to true
+- name: Check systemd unit files for each partition with autofix set to true (unit_name != fstab)
   include_tasks: systemdmount.yml
-  loop: "{{ partitions | selectattr('autofix') | list }}"
+  loop: "{{ partitions | selectattr('autofix') | rejectattr('unit_name','equalto','fstab') | list }}"
+
+- debug:
+    msg:
+      - "SYSTEMD: {{ partitions | selectattr('autofix') | rejectattr('unit_name','equalto','fstab') | list }}"
+      - "FSTAB: {{ partitions | selectattr('autofix') | selectattr('unit_name','equalto','fstab') | list }}"
+
+- name: Check fstab file for each partition with autofix set to true (unit_name == fstab)
+  include_tasks: fstab.yml
+  loop: "{{ partitions | selectattr('autofix') | selectattr('unit_name', 'equalto', 'fstab') | list }}"
 
 - name: Validate mount points
   import_tasks: validate.yml
