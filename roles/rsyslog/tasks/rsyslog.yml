@@ -4,6 +4,7 @@
   package:
     name: "{{ rsyslog_package }}"
     state: present
+    update_cache: yes
 
 - name: Enable and start Rsyslog
   service:

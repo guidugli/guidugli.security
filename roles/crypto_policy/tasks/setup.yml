@@ -5,6 +5,7 @@
   package:
     name: crypto-policies
     state: present
+    update_cache: yes
 
 - name: Get system crypto policy
   command: "/usr/bin/update-crypto-policies --show"

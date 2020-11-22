@@ -4,6 +4,7 @@
   package:
     name: authselect
     state: present
+    update_cache: yes
 
 - name: Create minimal base profile if required
   block:

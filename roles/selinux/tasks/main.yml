@@ -10,6 +10,7 @@
   package:
     name: "{{ selinux_requirements }}"
     state: present
+    update_cache: yes
 
 - name: manage selinux
   selinux:

@@ -6,7 +6,7 @@
 #       this role will try the sshd_config.port value; if not provided, use port 22.
 
 sshd_config:
-  port: 14090   
+  port: 12190   
   log_level: 'INFO'
   x11forwarding: 'no'
   max_auth_tries: 4
@@ -17,7 +17,7 @@ sshd_config:
   allow_tcp_forwarding: 'no'
   max_sessions: 4
   access_control:
-    allow_users: ['carlospg']
+    allow_users: ['myuser']
     allow_groups:
     DenyUsers:
     DenyGroups:

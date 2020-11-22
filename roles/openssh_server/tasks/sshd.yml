@@ -7,19 +7,20 @@
 # from CIS Control (check default statements on pretasks.yml file).
 ##
 
+#- name: Run tasks to detect SSH Port
+#  import_tasks: detect_sshd_port.yml
+
 - name: Install openssh-server if not already installed
   package:
     name: openssh-server
     state: present
+    update_cache: yes
 
 - name: Enable sshd service
   service:
     name: "sshd"
     enabled: yes
     state: started
-
-- name: Run tasks to detect SSH Port
-  import_tasks: detect_sshd_port.yml
 
 - name: Set permissions on SSH server configuration file
   file:

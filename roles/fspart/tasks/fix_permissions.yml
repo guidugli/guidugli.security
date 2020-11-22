@@ -37,7 +37,7 @@
     - name: Search for world writable files
       shell: |
         set -o pipefail
-        df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -0002
+        df --local -P | grep -v '/run/user' | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -0002
       args:
         executable: /bin/bash
       register: fs_cmd_result
@@ -67,7 +67,7 @@
     - name: Find any unowned files
       shell: |
         set -o pipefail
-        /usr/bin/df --local -P | /usr/bin/awk {' if (NR!=1) print $6'} | /usr/bin/xargs -I '{}' find '{}' -xdev -nouser
+        /usr/bin/df --local -P | grep -v '/run/user' | /usr/bin/awk {' if (NR!=1) print $6'} | /usr/bin/xargs -I '{}' find '{}' -xdev -nouser
       args:
         executable: /bin/bash
       register: fs_cmd_result
@@ -93,8 +93,8 @@
     - name: Find any ungrouped files
       shell: |
         set -o pipefail
-        /usr/bin/df --local -P | /usr/bin/awk {' if (NR!=1) print $6'} |
-        {{ 'grep -vE ^/dev$ |' if iscontainer }} /usr/bin/xargs -I '{}' find '{}' -xdev -nogroup
+        /usr/bin/df --local -P | grep -v '/run/user' | /usr/bin/awk {' if (NR!=1) print $6'} |
+        {{ 'grep -vE ^/dev$ |' if iscontainer else '' }} /usr/bin/xargs -I '{}' find '{}' -xdev -nogroup
       args:
         executable: /bin/bash
       register: fs_cmd_result
@@ -116,7 +116,7 @@
     - name: Find any SUID files
       shell: |
         set -o pipefail
-        df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -4000 2>/dev/null
+        df --local -P | grep -v '/run/user' | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -4000 2>/dev/null
       args:
         executable: /bin/bash
       register: fs_cmd_result
@@ -139,7 +139,7 @@
     - name: Find any SGID files
       shell: |
         set -o pipefail
-        df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -2000 2>/dev/null
+        df --local -P | grep -v /run/user | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type f -perm -2000 2>/dev/null
       args:
         executable: /bin/bash
       register: fs_cmd_result

@@ -16,7 +16,7 @@
   group:
     name: "{{ item }}"
     state: absent
-  loop: "{{ user_group_remove }}"
+  loop: "{{ user_group_remove | default([], true) }}"
   when: user_group_remove is defined
 
 
@@ -39,11 +39,20 @@
     label: "{{ item.name }}"
   when: user_account_add is defined
 
+# Update current 
+- name: Update
+  set_fact:
+    ansible_become_pass: "{{ user_new_password }}"
+    ansible_ssh_pass: "{{ user_new_password }}"
+  when:
+    - user_new_password is defined
+    - user_new_password | length > 0
+
 # Loop through provided list and ensure user is not present in the system
 - name: Ensure specified user accounts do not exist in the system
   user:
     name: "{{ item }}"
     state: absent
     remove: yes
-  loop: "{{ user_account_remove }}"
+  loop: "{{ user_account_remove | default([], true) }}"
   when: user_account_remove is defined

@@ -94,6 +94,7 @@
       notify:
         - reload systemd configuration
         - restart systemd unit
+        - reboot
 
     - name: "Configure config file options for unit {{ item.unit_name }}"
       lineinfile:
@@ -104,6 +105,7 @@
       notify:
         - reload systemd configuration
         - restart systemd unit
+        - reboot
 
 
 - name: Force systemd to reload in order to enable it to notice the changes

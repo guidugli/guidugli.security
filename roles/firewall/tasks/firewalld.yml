@@ -7,7 +7,10 @@
   firewalld:
     port: "{{ ansible_port }}/tcp"
     permanent: no
-  when: ansible_port is defined
+    state: enabled
+  when: 
+    - ansible_port is defined
+    - firewall_sw_install_result is changed or firewall_service_enablement_result is changed
 
 - name: Verify if provided service mapping exists on target system
   include_tasks: firewalld_services.yml

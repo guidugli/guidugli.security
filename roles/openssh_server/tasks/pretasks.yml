@@ -63,13 +63,6 @@
     msg: "Invalid value for {{ item.key }}. Allowed values are 'yes' or 'no'."
   loop: "{{ sshd_config | dict2items | selectattr('key', 'match', 'x11forwarding|allow_tcp_forwarding|use_dns') | list }}"
 
-- name: Check if files specified by variable exists
-  raw: "test -e {{ item.value }} && echo -n true || echo -n false"
-  register: result
-  failed_when: result.stdout == 'false'
-  changed_when: false
-  loop: "{{ sshd_config | dict2items | selectattr('key', 'match', 'banner') | list }}"
-
 - name: Check if sshd log level is valid
   assert:
     quiet: yes
@@ -84,15 +77,14 @@
       - sshd_config.max_startups is regex("^\d+:\d+:\d+$")
     msg: "Invalid max_startups variable value. It should be 3 integers separated by ':'."
 
-#### Add variable for values that change according to the distribution
-- name: Set variables for OS family dependent values (RedHat)
-  set_fact:
-    host_keys_group: 'ssh_keys'
-    host_keys_mode: '0640'
-  when: ansible_os_family == 'RedHat'
+#### DETECT SSH PORT TO USE ####
 
-- name: Set variables for OS family dependent values (Debian)
-  set_fact:
-    host_keys_group: 'root'
-    host_keys_mode: '0600'
-  when: ansible_os_family == 'Debian'
+- name: Run tasks to detect SSH Port
+  import_tasks: detect_sshd_port.yml
+
+- name: Check if files specified by variable exists
+  raw: "test -e {{ item.value }} && echo -n true || echo -n false"
+  register: result
+  failed_when: result.stdout == 'false'
+  changed_when: false
+  loop: "{{ sshd_config | dict2items | selectattr('key', 'match', 'banner') | list }}"

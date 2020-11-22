@@ -147,6 +147,25 @@
     - name: Run script on root PATH variable
       script: files/path_check.sh
       changed_when: false
+      failed_when: false
+      register: user_cmd_result
+
+    - name: Print report to user
+      debug:
+        msg:
+          - "Deviations found:"
+          - "{{ user_cmd_result.stdout_lines }}"
+      failed_when: user_cmd_result.rc != 0
+      changed_when: false
+  tags:
+    - check_root_path_integrity
+
+- name: Ensure all users home directories exist
+  block:
+    - name: Run script to check home dirs
+      script: files/check_homedir_exists.sh
+      changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -154,16 +173,17 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
-    - check_root_path_integrity
+    - check_homedir_exists
 
 - name: Ensure users home dir permissions are 750 or more restrictive
   block:
     - name: Run script to check home directories
       script: files/check_homedir.sh
       changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -171,7 +191,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_home_dir_perms
@@ -181,6 +201,7 @@
     - name: Run script to check home directories
       script: files/homedir_owner_check.sh
       changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -188,7 +209,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_home_dir_owner
@@ -198,6 +219,7 @@
     - name: Run script to check users files
       script: files/user_dot_file_check.sh
       changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -205,7 +227,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_users_dot_files
@@ -215,6 +237,7 @@
     - name: Run script to check users
       script: files/check_forward_files.sh
       changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -222,7 +245,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_users_forward_files
@@ -232,6 +255,7 @@
     - name: Run script to check users
       script: files/check_netrc.sh
       changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -239,7 +263,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_netrc_files
@@ -249,6 +273,7 @@
     - name: Run script to check .netrc files
       script: files/check_netrc_perms.sh
       changed_when: false
+      failed_when: false
       register: result
 
     - name: Print report to user
@@ -256,7 +281,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_netrc_files_perms
@@ -266,6 +291,7 @@
     - name: Run script to find .rhosts files
       script: files/find_rhosts.sh
       changed_when: false
+      failed_when: false
       register: result
 
     - name: Print report to user
@@ -273,7 +299,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_find_rhosts
@@ -283,6 +309,7 @@
     - name: Run script to check groups
       script: files/check_groups.sh
       changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -290,7 +317,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_groups
@@ -300,6 +327,7 @@
     - name: Run script to check UIDs
       script: files/check_dup_uid.sh
       changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -307,7 +335,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_duplicated_uid
@@ -317,6 +345,7 @@
     - name: Run script to check GIDs
       script: files/check_dup_gid.sh
       changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -324,7 +353,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_duplicated_gid
@@ -334,6 +363,7 @@
     - name: Run script to check user names
       script: files/check_dup_user_names.sh
       changed_when: false
+      failed_when: false
       register: user_cmd_result
 
     - name: Print report to user
@@ -341,7 +371,7 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_duplicated_user_name
@@ -351,6 +381,7 @@
     - name: Run script to check group names
       script: files/check_dup_group_names.sh
       changed_when: false
+      failed_when: false
       register: result
 
     - name: Print report to user
@@ -358,27 +389,10 @@
         msg:
           - "Deviations found:"
           - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
+      failed_when: user_cmd_result.rc != 0
       changed_when: false
   tags:
     - check_duplicated_user_name
-
-- name: Ensure all users home directories exist
-  block:
-    - name: Run script to check home dirs
-      script: files/check_homedir_exists.sh
-      changed_when: false
-      register: user_cmd_result
-
-    - name: Print report to user
-      debug:
-        msg:
-          - "Deviations found:"
-          - " {{ user_cmd_result.stdout_lines }}"
-      failed_when: user_cmd_result.stdout
-      changed_when: false
-  tags:
-    - check_homedir_exists
 
 - name: Report on shadow group in /etc/group
   block:
@@ -393,7 +407,7 @@
         msg: "Shadow group exists in /etc/group. Remove"
       changed_when: false
       failed_when: false
-      when: user_cmd_result.stdout
+      when: user_cmd_result.stdout | length > 0
   tags:
     - check_shadow_group
 
@@ -412,6 +426,6 @@
           - "{{ user_cmd_result.stdout_lines }}"
       changed_when: false
       failed_when: true
-      when: user_cmd_result.stdout
+      when: user_cmd_result.stdout | length > 0
   tags:
     - check_uid_zero

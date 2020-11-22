@@ -1,6 +1,10 @@
 ---
 # defaults file for user settings
 
+# If the password of the user running ansible changes
+# this variable needs to have the new password, so
+# ansible_become_pass and ansible_ssh_pass can be updated
+user_new_password: "{{ vault_admin_password }}"
 
 ## Password settings ##
 

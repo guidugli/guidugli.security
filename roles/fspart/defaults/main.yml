@@ -50,3 +50,20 @@ partitions:
     mount_options: ['mode=1777', 'strictatime', 'nodev', 'nosuid', 'noexec']
     validate_options: ['nodev', 'nosuid', 'noexec']
     autofix: yes
+
+# If mounting/remounting fail, is reboot allowed?
+# Sometimes partitions cannot be mounted because they 
+# are busy (have other system components using it).
+fspart_allow_reboot: yes
+
+# List the log files to ignore when removing permissions g-wx and o-rwx
+# and directories with permission g-w and o-rwx
+# Not implemented yet
+fspart_log_exception:
+  - /var/log
+  - /var/log/gdm
+  - /var/log/journal
+  - /var/log/btmp
+  - /var/log/journal/9ac3b4eccf62428bb4ae3d755c53b793
+  - /var/log/lastlog
+  - /var/log/wtmp

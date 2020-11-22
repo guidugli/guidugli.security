@@ -10,6 +10,11 @@
 # Choose a name to hold the settings in the scope of this role.
 sudo_config_file_name: 01_ansible
 
+# if specified, the default groups like wheel, admin, sudo will
+# be disabled, and the specified group enabled, so users of the
+# specified group are able to sudo to any command.
+sudo_admin_group: admin
+
 # if defined, add sudo configuration to 
 # generate log at the defined location
 sudo_log: /var/log/sudo.log

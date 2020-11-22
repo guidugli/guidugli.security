@@ -19,6 +19,8 @@
   package:
     name: "{{ firewall_packages_required }}"
     state: present
+    update_cache: yes
+  register: firewall_sw_install_result
   when:
     - firewall_packages_required is defined
 
@@ -36,6 +38,7 @@
     name: "{{ firewall_ipv4_service_name }}"
     state: started
     enabled: yes
+  register: firewall_service_enablement_result
 
 - name: Ensure ipv6 service is enabled and started (iptables only)
   service:

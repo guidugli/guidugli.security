@@ -4,6 +4,7 @@
   package:
     name: "{{ logrotate_packages }}"
     state: present
+    update_cache: yes
 
 - name: Check if logrotate.timer exists
   systemd:

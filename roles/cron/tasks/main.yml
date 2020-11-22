@@ -8,6 +8,7 @@
   package:
     name: "{{ cron_packages }}"
     state: present
+    update_cache: yes
 
 - name: configure shell
   lineinfile:

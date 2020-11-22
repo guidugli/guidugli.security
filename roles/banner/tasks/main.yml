@@ -50,7 +50,7 @@
         create: yes
         owner: root
         group: root
-        marker: "Ansible managed block"
+        marker: "## {mark} ANSIBLE MANAGED BLOCK ##"
         block: |
           user-db:user
           system-db:gdm

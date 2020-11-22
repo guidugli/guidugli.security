@@ -82,7 +82,7 @@
     line: "GRUB2_PASSWORD={{ grub_password  }}"
     create: yes
     mode: '0700'
-  when: grubs_.password is defined and ansible_os_family == 'RedHat'
+  when: grub_password is defined and ansible_os_family == 'RedHat'
   notify: update grub
 
 # Set grub password on Debian systems

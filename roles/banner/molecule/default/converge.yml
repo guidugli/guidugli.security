@@ -1,6 +1,9 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    banner_graphical_msg: "Authorized uses only. All activity may be monitored and reported."
+    banner_logo_file_name: greeter-logo.png
   tasks:
     - name: "Include banner"
       include_role:

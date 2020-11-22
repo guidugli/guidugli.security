@@ -5,6 +5,7 @@
   package:
     name: "{{ audit_packages }}"
     state: present
+    update_cache: yes
 
 - name: Enable auditd service
   service:
@@ -74,7 +75,7 @@
     - { find: '^space_left_action\s+=\s+((?!email).)*$', replace: 'space_left_action = email' }
     - { find: '^action_mail_acct\s+=\s+((?!root).)*$', replace: 'action_mail_acct = root' }
     - { find: '^admin_space_left_action\s+=\s+((?!suspend).)*$', replace: 'admin_space_left_action = suspend' }
-  notify: restart auditd
+  notify: reload auditd
 
 - name: Ensure audit rules are configured properly
   template:
@@ -84,7 +85,7 @@
     group: root
     mode: 0600
     force: "{{ force_overwrite_audit | default(false) }}"
-  notify: restart auditd
+  notify: reload auditd
   loop:
     - 01-init.rules
     - 10-bad-file-access.rules
@@ -110,10 +111,15 @@
     owner: root
     group: root
     mode: 0600
-  notify: restart auditd
+  notify: reload auditd
 
-- name: Rename audit.rules if it exists
-  raw: "test -e {{ audit_rulesd_path }}/audit.rules && mv -f {{ audit_rulesd_path }}/audit.rules {{ audit_rulesd_path }}/audit.rules.old"
+- name: "Check if {{ audit_rulesd_path }}/audit.rules exists"
+  raw: "test -e {{ audit_rulesd_path }}/audit.rules && echo -n 'true' || echo -n 'false'"
   register: audit_cmd_result
-  failed_when: audit_cmd_result.stderr | length > 0
-  changed_when: audit_cmd_result.rc == 0
+  changed_when: false
+
+- name: "Rename {{ audit_rulesd_path }}/audit.rules"
+  command: "mv -f {{ audit_rulesd_path }}/audit.rules {{ audit_rulesd_path }}/audit.rules.old"
+  register: audit_cmd_result
+  changed_when: true
+  when: audit_cmd_result.stdout == 'true'

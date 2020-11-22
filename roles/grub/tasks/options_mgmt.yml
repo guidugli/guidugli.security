@@ -64,7 +64,7 @@
 - name: Add options
   vars:
     record: "{{ grub_options_present | selectattr('option','equalto', item) | flatten | first }}"
-    str: "{{ record.option + (('=' + record.value|string) if (record.value is defined and (record.value | length > 0)) else '') }}"
+    str: "{{ record.option + (('=' + record.value|string) if (record.value is defined and (record.value | string | length > 0)) else '') }}"
   replace:
     path: "{{ grub_default_path }}"
     regexp: '^{{ grub_cmdline_var_name }}="'
