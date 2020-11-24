@@ -3,6 +3,9 @@
   hosts: all
   tasks:
 
+    - name: import test variables
+      include_vars: vars/test.yml
+
     - name: Debian family systems need to get package list
       apt:
         name: ['dialog', 'grub2']

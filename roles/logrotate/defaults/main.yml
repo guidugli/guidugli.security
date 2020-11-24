@@ -2,7 +2,6 @@
 # defaults file for logrotate
 
 # Specify the files to be copied to logrotate.d directory
-# This variable is optional
 logrotate_config_files: "{{ logrotate_files_to_copy }}"
 
 # NOTICE: these settings apply only to global

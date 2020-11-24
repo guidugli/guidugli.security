@@ -10,4 +10,4 @@ cron_path: /sbin:/bin:/usr/sbin:/usr/bin
 # The address where mails should be sent to.
 cron_mailto: root
 
-cron_allowed_users: ['carlospg', 'root']
+cron_allowed_users: ['myuser', 'root']

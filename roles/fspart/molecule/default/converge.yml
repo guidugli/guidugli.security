@@ -3,6 +3,9 @@
   hosts: all
   tasks:
 
+    - name: include test vars
+      include_vars: vars/test.yml
+
     - name: Create fstab file
       file:
         path: /etc/fstab

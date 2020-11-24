@@ -8,7 +8,7 @@
     port: "{{ ansible_port }}/tcp"
     permanent: no
     state: enabled
-  when: 
+  when:
     - ansible_port is defined
     - firewall_sw_install_result is changed or firewall_service_enablement_result is changed
 

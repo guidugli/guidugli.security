@@ -2,9 +2,9 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: include test variables
+    - name: import test vars
       include_vars: vars/test.yml
 
-    - name: "Include user"
+    - name: "Include postfix"
       include_role:
-        name: "user"
+        name: "postfix"

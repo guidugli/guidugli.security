@@ -3,9 +3,8 @@
   user: root
   hosts: all
   tasks:
-#    - name: update cache
-#      apt:
-#        update_cache: yes
+    - name: Import test variables
+      include_vars: vars/test.yml
 
     - name: "Include firewall"
       include_role:

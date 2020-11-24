@@ -30,4 +30,3 @@
   when:
     - fspart_allow_reboot | bool
     - ansible_connection != "docker"
-

@@ -4,7 +4,6 @@
 # If the password of the user running ansible changes
 # this variable needs to have the new password, so
 # ansible_become_pass and ansible_ssh_pass can be updated
-# Store the password on another file and encrypt it with vault.
 #user_new_password: "{{ vault_admin_password }}"
 
 ## Password settings ##
@@ -33,22 +32,22 @@ user_fix_existing_accounts: yes
 
 ## OPTIONAL VARIABLES ##
 
-#root_password: myencryptedpass
+root_password: mypass
 
-#user_account_add:
-#  - name: example
-#    comment: This is an example
-#    uid: 1076
-#    groups: ['admin']
-#    shell: /bin/bash
-#    password: encpwd
+user_account_add:
+  - name: example
+    comment: This is an example
+    uid: 1076
+    groups: ['admin']
+    shell: /bin/bash
+    password: encpwd
 
-#user_account_remove:
-#  - removeme
+user_account_remove:
+  - removeme
 
-#user_group_add:
-#  - name: admin
-#    gid: 760
+user_group_add:
+  - name: admin
+    gid: 760
 
-#user_group_remove:
-#  - mygroup
+user_group_remove:
+  - mygroup
