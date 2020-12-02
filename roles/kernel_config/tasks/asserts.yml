@@ -2,18 +2,33 @@
 
 # Do not stop execution if a module do not exist but
 # show an error message.
-- name: Check if kernel module exists on the system.
+- name: Check if kernel modules to be disabled exist on the system.
   command: "/usr/sbin/modinfo {{ item }}"
   changed_when: false
   ignore_errors: yes
   loop: "{{ kernel_disable_modules | default([], true) }}"
 
+- name: Check if kernel modules to be blacklisted exist on the system.
+  command: "/usr/sbin/modinfo {{ item }}"
+  changed_when: false
+  ignore_errors: yes
+  loop: "{{ kernel_blacklist_modules | default([], true) }}"
+
+- name: Check if kernel modules to be auto started exist on the system.
+  command: "/usr/sbin/modinfo {{ item }}"
+  changed_when: false
+  ignore_errors: yes
+  loop: "{{ kernel_autostart_modules | default([], true) }}"
+
 # Can check only if the value was specified
 - name: Check if sysctl information is valid
   assert:
     that:
-      - item.name is defined and (item.name | length > 0)
-      - item.value is defined and (item.value | length > 0)
+      - item.name is defined
+      - item.name is string
+      - item.name | length > 0
+      - item.value is defined
+      - item.value | string | length > 0
     quiet: yes
     msg: "Both name and value should be defined."
   loop: "{{ kernel_sysctl | default([], true) }}"

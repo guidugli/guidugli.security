@@ -23,8 +23,8 @@
 - name: test if firewall_services is set correctly
   assert:
     that:
-      - firewall_services | length > 0
       - firewall_services is iterable
+      - firewall_services | length > 0
     quiet: yes
   when:
     - firewall_services is defined
@@ -33,6 +33,7 @@
   assert:
     that:
       - item.name is defined
+      - item.name is string
       - item.name | length > 0
     quiet: yes
   loop: "{{ firewall_services }}"

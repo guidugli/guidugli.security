@@ -3,6 +3,7 @@
   assert:
     that:
       - selinux_state is defined
+      - selinux_state is string
       - selinux_state | length >= 0
       - selinux_state in ["disabled", "enforcing", "permissive"]
     quiet: yes
@@ -11,6 +12,7 @@
   assert:
     that:
       - selinux_policy is defined
+      - selinux_policy is string
       - selinux_policy | length >= 0
       - selinux_policy in ["default", "minimum", "mls", "targeted"]
     quiet: yes

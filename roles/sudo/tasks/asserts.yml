@@ -8,7 +8,7 @@
     quiet: yes
     that:
       - sudo_config_file_name is defined
-      - sudo_config_file_name | type_debug == 'AnsibleUnicode'
+      - sudo_config_file_name is string
       - sudo_config_file_name is regex('[a-zA-Z0-9_]+')  # Composed of leters, numbers and underline
     msg: "sudo_config_file_name must be speficied, must be a string and must contain only leters, numbers and underline"
 

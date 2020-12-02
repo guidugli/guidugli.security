@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+
+    - name: import test vars
+      include_vars: vars/test.yml
+
+    - name: "Include samba"
+      include_role:
+        name: "samba"

@@ -5,6 +5,26 @@
 # file that can be written by everyone (others).
 fs_world_writeable_fix_enabled: yes
 
+#### CRYPTTAB ####
+
+# all crypttab variables are optional
+
+# Path to store files storing keys for encrypted partitions
+fspart_cryptkeys_path: /etc/cryptkeys
+
+# Crypttab entries
+fspart_crypttab_entries:
+  - name: luks-test
+    backing_device: UUID=6b244d35-a72b-1234-5678-4258d364809c
+    password: /etc/cryptkeys/mykey
+    opts: discard,luks
+
+# Files to be copied to fspart_cryptkeys_path defined path
+fspart_cryptkeys_files:
+  - { name: mykey, src: mykey }
+
+#### PARTITIONS ####
+
 # List of partitions that must be present on the system
 # and the mount options they should have.
 

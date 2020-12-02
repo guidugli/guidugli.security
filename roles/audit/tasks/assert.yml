@@ -10,4 +10,5 @@
   assert:
     that:
       - audit_sudo_log is defined
+      - audit_sudo_log is string
       - audit_sudo_log | length > 0

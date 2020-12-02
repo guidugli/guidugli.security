@@ -13,6 +13,7 @@
     tmprec:
       name: "{{ item.name | default('', true) }}"
       mount_options: "{{ item.mount_options | default([]) }}"
+      mount_state: "{{ item.mount_state | default('mounted') }}"
       validate_options: "{{ item.validate_options | default([]) }}"
       autofix: "{{ item.autofix | default(false) }}"
       unit_name: "{{ item.unit_name | default('no_unit_name') }}"

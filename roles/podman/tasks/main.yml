@@ -1,0 +1,23 @@
+---
+# tasks file for podman
+
+- name: "Add {{ ansible_distribution }} repository"
+  include_tasks: "add_{{ ansible_distribution }}_repos.yml"
+  when: ansible_distribution in ['Ubuntu', 'Debian']
+
+- name: Install podman packages
+  package:
+    name: "{{ podman_packages }}"
+    state: present
+    update_cache: yes
+
+- name: set user.max_user_namespaces
+  sysctl:
+    name: user.max_user_namespaces
+    value: "{{ podman_max_user_namespaces | string }}"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  when:
+    - podman_max_user_namespaces is defined
+    - podman_max_user_namespaces is number

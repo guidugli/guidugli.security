@@ -1,0 +1,24 @@
+---
+
+- name: Check selinux booleans
+  assert:
+    that:
+      - vars[item] | type_debug == 'bool'
+    quiet: yes
+  when: vars[item] is defined
+  loop:
+    - kvm_staff_use_svirt
+    - kvm_unprivuser_use_svirt
+    - kvm_virt_sandbox_use_audit
+    - kvm_virt_sandbox_use_netlink
+    - kvm_virt_sandbox_use_sys_admin
+    - kvm_virt_transition_userdomain
+    - kvm_virt_use_comm
+    - kvm_virt_use_execmem
+    - kvm_virt_use_fusefs
+    - kvm_virt_use_nfs
+    - kvm_virt_use_rawip
+    - kvm_virt_use_samba
+    - kvm_virt_use_sanlock
+    - kvm_virt_use_usb
+    - kvm_virt_use_xserver

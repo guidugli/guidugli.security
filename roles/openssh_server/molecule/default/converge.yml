@@ -2,6 +2,9 @@
 - name: Converge
   hosts: all
   tasks:
+    - name: import test vars
+      include_vars: vars/test.yml
+
     - name: update packages on debian family systems
       apt:
         update_cache: yes

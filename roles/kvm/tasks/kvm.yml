@@ -1,0 +1,184 @@
+---
+# tasks file for kvm
+
+- name: Install kvm packages
+  package:
+    name: "{{ kvm_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Enable libvirtd service
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop: "{{ kvm_services }}"
+
+- name: Set selinux boolean values
+  seboolean:
+    name: "{{ kvm_sebool_map[item] }}"
+    state: "{{ vars[item] }}"
+    persistent: yes
+  when:
+    - vars[item] is defined
+    - ansible_selinux.status is defined
+    - ansible_selinux.status == 'enabled'
+  loop:
+    - kvm_staff_use_svirt
+    - kvm_unprivuser_use_svirt
+    - kvm_virt_sandbox_use_audit
+    - kvm_virt_sandbox_use_netlink
+    - kvm_virt_sandbox_use_sys_admin
+    - kvm_virt_transition_userdomain
+    - kvm_virt_use_comm
+    - kvm_virt_use_execmem
+    - kvm_virt_use_fusefs
+    - kvm_virt_use_nfs
+    - kvm_virt_use_rawip
+    - kvm_virt_use_samba
+    - kvm_virt_use_sanlock
+    - kvm_virt_use_usb
+    - kvm_virt_use_xserver
+  notify: restart services
+
+- name: "Create symlink from {{ kvm_qemu_link.src }} to {{ kvm_qemu_link.dest }}"
+  file:
+    src: "{{ kvm_qemu_link.src }}"
+    dest: "{{ kvm_qemu_link.dest }}"
+    owner: root
+    group: root
+    state: link
+  when:
+    - kvm_qemu_link is defined
+    - kvm_qemu_link.src is defined
+    - kvm_qemu_link.dest is defined
+
+# Define a new network
+- name: Create and set networks to autostart on boot
+  block:
+    - name: Define network
+      community.libvirt.virt_net:
+        command: define
+        name: "{{ item.name }}"
+        xml: '{{ lookup("template", "networks/{{ item.template }}") }}'
+      loop: "{{ kvm_network_add }}"
+
+    - name: Set network to autostart on boot
+      community.libvirt.virt_net:
+        autostart: yes
+        name: "{{ item.name }}"
+      loop: "{{ kvm_network_add }}"
+
+    - name: Ensure network is active
+      community.libvirt.virt_net:
+        state: active
+        name: "{{ item.name }}"
+      loop: "{{ kvm_network_add }}"
+  when: kvm_network_add is defined
+
+# Remove a network
+- name: Stop and remove networks
+  block:
+    - name: Stop (destroy) network
+      community.libvirt.virt_net:
+        command: destroy
+        name: "{{ item }}"
+      loop: "{{ kvm_network_remove }}"
+      ignore_errors: yes
+
+    - name: Undefine network
+      community.libvirt.virt_net:
+        command: undefine
+        name: "{{ item }}"
+      loop: "{{ kvm_network_remove }}"
+  when: kvm_network_remove is defined
+
+# POOLS
+- name: Create and set pools to autostart on boot
+  block:
+    - name: Define pool
+      community.libvirt.virt_pool:
+        command: define
+        name: "{{ item.name }}"
+        xml: '{{ lookup("template", "pools/{{ item.template }}") }}'
+      loop: "{{ kvm_pool_add }}"
+
+    - name: Set pool to autostart on boot
+      community.libvirt.virt_pool:
+        autostart: yes
+        name: "{{ item.name }}"
+      loop: "{{ kvm_pool_add }}"
+
+    - name: Ensure pool is active
+      community.libvirt.virt_pool:
+        state: active
+        name: "{{ item.name }}"
+      loop: "{{ kvm_pool_add }}"
+  when: kvm_pool_add is defined
+
+# Remove a pool
+- name: Stop and remove pools
+  block:
+    - name: Stop (destroy) pool
+      community.libvirt.virt_pool:
+        command: destroy
+        name: "{{ item }}"
+      loop: "{{ kvm_pool_remove }}"
+      ignore_errors: yes
+
+    - name: Undefine pool
+      community.libvirt.virt_pool:
+        command: undefine
+        name: "{{ item }}"
+      loop: "{{ kvm_pool_remove }}"
+  when: kvm_pool_remove is defined
+ 
+ # VMs
+
+- name: Copy virtual machine files to destination
+  vars:
+    # Check files is defined and have elements
+    isempty: "{{ kvm_vm_add | selectattr('files', 'defined') | length == 0 }}"
+    # Only call subelements if not empty, preventing error
+    looplist: "{{ [] if isempty else kvm_vm_add | subelements('files') }}"
+  copy:
+    src: "{{ item.1.name }}"
+    dest: "{{ item.1.dest }}"
+    force: no
+    owner: "{{ item.1.owner | default('root') }}"
+    group: "{{ item.1.group | default('root') }}"
+    mode: "{{ item.1.mode | default('0600') }}"
+    remote_src: no
+  when:
+    - item.1.name is defined
+    - item.1.name is file
+    - item.1.dest is defined
+    - item.1.dest | type_debug == 'str'
+  loop: "{{ looplist }}"
+
+ # Defining a VM and making is autostart with host. VM will be off after this task
+- name: define vm from xml and set autostart
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/libexec"
+  community.libvirt.virt:
+    command: define
+    xml: "{{ lookup('template', 'vms/{{ item.template }}') }}"
+    autostart: "{{ item.autostart | default(false) }}"
+  loop: "{{ kvm_vm_add }}"
+
+# Stop vm and undefine it
+- name: Stop VMs and undefine them
+  block:
+    - name: Stop (destroy) vm
+      community.libvirt.virt:
+        command: destroy
+        name: "{{ item }}"
+      loop: "{{ kvm_vm_remove }}"
+      ignore_errors: yes
+
+    - name: Undefine vm
+      community.libvirt.virt:
+        command: undefine
+        name: "{{ item }}"
+      loop: "{{ kvm_vm_remove }}"
+  when: kvm_vm_remove is defined

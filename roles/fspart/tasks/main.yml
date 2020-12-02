@@ -7,6 +7,9 @@
 - name: Check partition variables
   import_tasks: asserts.yml
 
+- name: Check crypttab entries
+  import_tasks: crypttab.yml
+
 - name: Check systemd unit files for each partition with autofix set to true (unit_name != fstab)
   include_tasks: systemdmount.yml
   loop: "{{ partitions | selectattr('autofix') | rejectattr('unit_name','equalto','fstab') | list }}"

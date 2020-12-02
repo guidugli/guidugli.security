@@ -15,10 +15,12 @@
     - pf_smtpd_delay_reject
 
 - name: Check string values
+  vars:
+    litem: "{{ lookup('vars', item) }}"
   assert:
     that:
-      - vars[item] | type_debug == 'AnsibleUnicode'
-      - vars[item] | length > 0
+      - litem is string
+      - litem | length > 0
     quiet: yes
   when: vars[item] is defined
   loop:
@@ -34,10 +36,12 @@
 # but when referencing them as vars['mylist'], the
 # type become AnsibleSequence
 - name: Check if lists are ok
+  vars:
+    litem: "{{ lookup('vars', item) }}"
   assert:
     that:
-      - vars[item] | type_debug == 'AnsibleSequence'
-      - vars[item] | length > 0
+      - litem is iterable
+      - litem | length > 0
     quiet: yes
   when: vars[item] is defined
   loop:
@@ -51,7 +55,7 @@
 - name: Check pf_smtp_sasl_security_options values
   assert:
     that:
-      - item | type_debug == 'str'
+      - item is string
       - item in pf_smtp_sasl_security_options_vv
     quiet: yes
   when: pf_smtp_sasl_security_options is defined
@@ -60,7 +64,7 @@
 - name: Check pf_smtp_tls_security_level values
   assert:
     that:
-      - pf_smtp_tls_security_level | type_debug == 'AnsibleUnicode'
+      - pf_smtp_tls_security_level is string
       - pf_smtp_tls_security_level in pf_smtp_tls_security_level_vv
     quiet: yes
   when: pf_smtp_tls_security_level is defined
@@ -68,7 +72,7 @@
 - name: Check pf_smtp_tls_mandatory_ciphers values
   assert:
     that:
-      - pf_smtp_tls_mandatory_ciphers | type_debug == 'AnsibleUnicode'
+      - pf_smtp_tls_mandatory_ciphers is string
       - pf_smtp_tls_mandatory_ciphers in pf_smtp_tls_mandatory_ciphers_vv
     quiet: yes
   when: pf_smtp_tls_mandatory_ciphers is defined
@@ -76,16 +80,17 @@
 - name: Check pf_inet_protocols values
   assert:
     that:
-      - pf_inet_protocols | type_debug == 'AnsibleUnicode'
+      - pf_inet_protocols is string
       - pf_inet_protocols in pf_inet_protocols_vv
     quiet: yes
   when: pf_inet_protocols is defined
 
 - name: Check integer value variables
+  vars:
+    litem: "{{ lookup('vars', item) }}"
   assert:
     that:
-      - vars[item] | type_debug == 'int'
-      - vars[item] >= 0
+      - litem | int(-1) >= 0
     quiet: yes
   when: vars[item] is defined
   loop:
@@ -96,11 +101,12 @@
 - name: Check variables that represents path
   vars:
     pathre: '^(?:[\/])$|^(?:[\/][a-zA-Z0-9_.-]+)+[\/]?$'
+    litem: "{{ lookup('vars', item) }}"
   assert:
     that:
-      - vars[item] | type_debug == 'AnsibleUnicode'
-      - vars[item] | length > 0
-      - vars[item] is regex(pathre)
+      - litem is string
+      - litem | length > 0
+      - litem is regex(pathre)
     quiet: yes
   when: vars[item] is defined
   loop:

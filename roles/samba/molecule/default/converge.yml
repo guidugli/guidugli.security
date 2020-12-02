@@ -1,0 +1,26 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+
+    - name: import test vars
+      include_vars: vars/test.yml
+
+    - name: "Include samba"
+      include_role:
+        name: "samba"
+
+#    - name: "Test user changing password"
+#      include_role:
+#        name: "samba"
+#      vars:
+#        smb_users:
+#          - name: operator
+#            password: newpassword
+
+#    - name: "Test removing user"
+#      include_role:
+#        name: "samba"
+#      vars:
+#        smb_users: []
+#        smb_users_remove: ['operator']

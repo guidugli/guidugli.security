@@ -1,0 +1,7 @@
+---
+# defaults file for podman
+
+# Optional parameter
+# increase the number of user namespaces in the kernel
+# https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_atomic_host/7/html-single/managing_containers/index#set_up_for_rootless_containers
+#podman_max_user_namespaces: 28633

@@ -1,0 +1,77 @@
+---
+# defaults file for kvm
+
+#kvm_network_add:
+#  - name: default22
+#    template: default22.xml.j2
+
+#kvm_network_remove:
+#  - default22
+
+#kvm_pool_add:
+#  - name: default22
+#    template: default22.xml.j2
+
+#kvm_pool_remove:
+#  - default22
+
+#kvm_vm_add:
+#  - name: House
+#    template: House.xml.j2
+#    autostart: no
+#    files:
+#      - name: House.qcow2
+#        dest: /opt/House.qcow2
+#        owner: root
+#        group: root
+#        mode: '0600'
+
+#kvm_vm_remove:
+#  - House
+
+### SELINUX BOOLEANS ###
+
+# Enables staff users to create and transition to sVirt domains.
+#kvm_staff_use_svirt: no
+
+# Enables unprivileged users to create and transition to sVirt domains.
+#kvm_unprivuser_use_svirt: no
+
+# Enables sandbox containers to send audit messages.
+#kvm_virt_sandbox_use_audit: no
+
+# Enables sandbox containers to use netlink system calls.
+#kvm_virt_sandbox_use_netlink: no
+
+# Enables sandbox containers to use sys_admin system calls, such as mount.
+#kvm_virt_sandbox_use_sys_admin: no
+
+# Enables virtual processes to run as user domains.
+#kvm_virt_transition_userdomain: no
+
+# Enables virt to use serial/parallel communication ports.
+#kvm_virt_use_comm: no
+
+# Enables confined virtual guests to use executable memory and executable stack.
+#kvm_virt_use_execmem: no
+
+# Enables virt to read FUSE mounted files.
+#kvm_virt_use_fusefs: no
+
+# Enables virt to manage NFS mounted files.
+#kvm_virt_use_nfs: no
+
+# Enables virt to interact with rawip sockets.
+#kvm_virt_use_rawip: no
+
+# Enables virt to manage CIFS mounted files.
+#kvm_virt_use_samba: no
+
+# Enables confined virtual guests to interact with the sanlock.
+#kvm_virt_use_sanlock: no
+
+# Enables virt to use USB devices.
+#kvm_virt_use_usb: no
+
+# Enables virtual machine to interact with the X Window System.
+#kvm_virt_use_xserver: no

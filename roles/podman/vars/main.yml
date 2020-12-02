@@ -1,0 +1,13 @@
+---
+# vars file for podman
+
+_podman_packages:
+  default: ['podman']
+  RedHat: ['podman', 'buildah', 'skopeo', 'podman-docker', 'slirp4netns']
+  Fedora: ['podman', 'buildah', 'skopeo', 'podman-docker', 'slirp4netns']
+  CentOS: ['podman', 'buildah', 'skopeo', 'podman-docker', 'slirp4netns']
+  Ubuntu: ['podman', 'buildah', 'skopeo', 'software-properties-common', 'uidmap', 'slirp4netns']
+  Debian: ['podman', 'buildah', 'skopeo', 'software-properties-common', 'uidmap', 'slirp4netns']
+  
+
+podman_packages: "{{ _podman_packages[ansible_distribution ~ '-' ~ ansible_distribution_major_version] | default(_podman_packages[ansible_distribution]) | default(_podman_packages['default']) }}"

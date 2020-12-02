@@ -13,78 +13,70 @@
 #     an invalid path (banner for example).
 ##
 
-- name: Set default value for non valid integers
-  set_fact:
-    int_default_value: -1
+- name: Check integer variables
+  assert:
+    that:
+      - lookup('vars', item) is number
+    quiet: yes
+  when: vars[item] is defined
+  loop:
+    - openssh_port
+    - openssh_max_auth_tries
+    - openssh_client_alive_interval
+    - openssh_client_alive_count_max
+    - openssh_login_grace_time
+    - openssh_max_sessions
 
-# Logging with a DEBUG level violates the privacy of users and is not recommended.
-- name: Set allowed log levels
-  set_fact:
-    valid_sshd_log_level_values: "['QUIET','FATAL','ERROR','INFO','VERBOSE']"
+- name: Check boolean variables
+  assert:
+    that:
+      - lookup('vars', item) | type_debug == 'bool'
+    quiet: yes
+  when: vars[item] is defined
+  loop:
+    - openssh_x11forwarding
+    - openssh_allow_tcp_forwarding
+    - openssh_ignore_rhosts
+    - openssh_host_based_authentication
+    - openssh_permit_root_login
+    - openssh_permit_empty_passwords
+    - openssh_permit_user_environment
+    - openssh_use_pam
+    - openssh_use_dns
 
-# The variables below will be overwritten with default value if they were not specified
-- name: Checking SSHD Configuration Variables
-  set_fact:
-    sshd_config:
-      # For port, respect ansible port if provided. If not provided, get it from variables.
-      port: "{{ ansible_port | default(sshd_config.port, true) | default(22, true) | int(int_default_value) }}"
-      log_level: "{{ sshd_config.log_level | upper| default('INFO', true) }}"
-      x11forwarding: "{{ sshd_config.x11forwarding | default('no', true) | lower }}"
-      max_auth_tries: "{{ sshd_config.max_auth_tries | default(4, true) | int(int_default_value) }}"
-      client_alive_interval: "{{ sshd_config.client_alive_interval | default(300, true) | int(int_default_value) }}"
-      client_alive_count_max: "{{ sshd_config.client_alive_count_max | default(0, true) | int(int_default_value) }}"
-      login_grace_time: "{{ sshd_config.login_grace_time | default(60, true) | int(int_default_value) }}"
-      banner: "{{ sshd_config.banner | default('/etc/issue.net') }}"
-      allow_tcp_forwarding: "{{ sshd_config.allow_tcp_forwarding | default('no', true) }}"
-      max_sessions: "{{ sshd_config.max_sessions | default(4, true) | int(int_default_value) }}"
-      max_startups: "{{ sshd_config.max_startups | default('10:30:60', true) }}"
-      use_dns: "{{ sshd_config.use_dns | default('yes', true) }}"
+- name: Check list variables
+  assert:
+    that:
+      - lookup('vars', item) is sequence
+    quiet: yes
+  when: vars[item] is defined
+  loop:
+    - openssh_allow_users
+    - openssh_allow_groups
+    - openssh_deny_users
+    - openssh_deny_groups
+
+- name: Check remaining variables
+  vars:
+    pathre: '^(?:[\/])$|^(?:[\/][a-zA-Z0-9_.-]+)+[\/]?$'
+  assert:
+    that:
+      - openssh_log_level is string
+      - openssh_log_level in openssh_valid_log_levels
+      - openssh_banner is regex(pathre)
+      - openssh_max_startups is regex("^\d+:\d+:\d+$")
 
 - name: Set ansible port for the host
   set_fact:
-    ansible_port: "{{ sshd_config.port }}"
-
-- name: Check if these integer variables are invalid (equal zero)
-  assert:
-    quiet: yes
-    that:
-      - item.value | int(int_default_value) != -1
-    msg: "Invalid value for {{ item.key }}. Allowed values are integers starting at 0 (zero)."
-  loop: >
-    {{ sshd_config | dict2items |
-     selectattr('key', 'match', 'port|max_auth_tries|client_alive_interval|client_alive_count_max|login_grace_time|max_sessions')
-     | list }}
-
-- name: Check if these yes/no values are invalid
-  assert:
-    quiet: yes
-    that:
-      - (item.value | lower) in ['yes','no']
-    msg: "Invalid value for {{ item.key }}. Allowed values are 'yes' or 'no'."
-  loop: "{{ sshd_config | dict2items | selectattr('key', 'match', 'x11forwarding|allow_tcp_forwarding|use_dns') | list }}"
-
-- name: Check if sshd log level is valid
-  assert:
-    quiet: yes
-    that:
-      - sshd_config.log_level in valid_sshd_log_level_values
-    msg: "Invalid or not allowed SSHD log level specified. Allowed values are: {{ valid_sshd_log_level_values | join(',') }}"
-
-- name: Check if max_startups match 3 groups of int separated by colon
-  assert:
-    quiet: yes
-    that:
-      - sshd_config.max_startups is regex("^\d+:\d+:\d+$")
-    msg: "Invalid max_startups variable value. It should be 3 integers separated by ':'."
+    ansible_port: "{{ openssh_port }}"
 
 #### DETECT SSH PORT TO USE ####
 
 - name: Run tasks to detect SSH Port
   import_tasks: detect_sshd_port.yml
 
-- name: Check if files specified by variable exists
-  raw: "test -e {{ item.value }} && echo -n true || echo -n false"
-  register: result
-  failed_when: result.stdout == 'false'
+- name: Check if banner file exists
+  raw: "test -e {{ openssh_banner }} && echo -n true || echo -n false"
+  register: openssh_cmd_result
+  failed_when: openssh_cmd_result.stdout == 'false'
   changed_when: false
-  loop: "{{ sshd_config | dict2items | selectattr('key', 'match', 'banner') | list }}"

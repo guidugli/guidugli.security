@@ -1,0 +1,8 @@
+---
+# tasks file for kvm
+
+- name: include assert.yml
+  include_tasks: assert.yml
+
+- name: include kvm.yml
+  include_tasks: kvm.yml

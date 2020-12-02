@@ -11,6 +11,7 @@
   assert:
     that:
       - authselect_profile_name is defined
+      - authselect_profile_name is string
       - authselect_profile_name | length > 0
     quiet: yes
   when: authselect_enabled
@@ -35,7 +36,7 @@
   assert:
     that:
       - vars[item] is defined
-      - vars[item] | default(-100) | int(-100) > -100
+      - vars[item] | int(-100) > -100
     quiet: yes
   loop:
     - auth_remember

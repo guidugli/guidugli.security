@@ -1,0 +1,16 @@
+---
+- name: Add software repository
+  lineinfile:
+    path: /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+    regex: 'deb\shttps://download.opensuse.org/repositories/devel:/kubic:/libcontainers:'
+    line: 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/Debian_{{ ansible_distribution_major_version }}/ /'
+    state: present
+    create: yes
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Add repository key
+  apt_key:
+    url: 'https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/Debian_{{ ansible_distribution_major_version }}/Release.key'
+    state: present

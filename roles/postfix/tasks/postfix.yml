@@ -49,7 +49,7 @@
     group: "{{ pf_main_cf_group }}"
     mode: "{{ pf_main_cf_mode }}"
     backup: yes
-  when: 
+  when:
     - pf_smtp_server is defined
     - pf_smtp_server_port is defined
   notify: restart postfix
@@ -123,7 +123,7 @@
     - pf_email_password is defined
     - pf_smtp_server is defined
     - pf_smtp_server_port is defined
-  notify: 
+  notify:
     - run postmap
     - restart postfix
 

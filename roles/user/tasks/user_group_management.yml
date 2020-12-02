@@ -56,3 +56,16 @@
     remove: yes
   loop: "{{ user_account_remove | default([], true) }}"
   when: user_account_remove is defined
+
+# Add/remove aliases from bashrc
+- name: Add/Remove aliases from user's .bashrc
+  vars:
+    homepath: "{{ '/root/.bashrc' if item.user == 'root' else '/home/' + item.user + '/.bashrc' }}"
+  lineinfile:
+    path: "{{ homepath }}"
+    regex: '^alias\s+{{ item.alias }}='
+    line: "alias {{ item.alias }}='{{ item.command }}'"
+    state: "{{ item.state }}"
+    mode: '0640'
+    create: no
+  loop: "{{ user_alias | default([], true) }}"

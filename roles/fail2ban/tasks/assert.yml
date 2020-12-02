@@ -3,11 +3,11 @@
 - name: Validate variables that expect integer values
   assert:
     that:
+      - lookup('vars',item) is number
       - vars[item] | int(-1000) != -1000
     quiet: yes
   when:
     - vars[item] is defined
-    - vars[item] | type_debug != 'NoneType'
   loop:
     - f2b_bantime_rndtime
     - f2b_bantime_maxtime
@@ -21,7 +21,6 @@
     quiet: yes
   when:
     - vars[item] is defined
-    - vars[item] | type_debug != 'NoneType'
   loop:
     - f2b_bantime_increment
     - f2b_bantime_overalljails
@@ -30,11 +29,11 @@
 - name: Validate variables that expect time
   assert:
     that:
+      - vars[item] | type_debug != 'NoneType'
       - vars[item] is regex('^\d+[mhdw]?$')
     quiet: yes
   when:
     - vars[item] is defined
-    - vars[item] | type_debug != 'NoneType'
   loop:
     - f2b_bantime
     - f2b_findtime
@@ -44,12 +43,12 @@
     iplist: "{{ f2b_ignoreip.split() | reject('equalto','') | list }}"
   assert:
     that:
-      - item | ansible.netcommon.ipaddr != false
+      - f2b_ignoreip | type_debug != 'NoneType'
+      - item | ansible.netcommon.ipaddr
     quiet: yes
   loop: "{{ iplist }}"
   when:
     - f2b_ignoreip is defined
-    - f2b_ignoreip | type_debug != 'NoneType'
 
 - name: "Ensure only one is specified: fb2_bantime_multipliers or f2b_bantime_formula"
   assert:
@@ -59,18 +58,25 @@
     success_msg: "fb2_bantime_multipliers and f2b_bantime_formula are ok"
     quiet: yes
 
+- name: Check f2b_jails list
+  assert:
+    that:
+      - f2b_jails is iterable
+    quiet: yes
+  when: f2b_jails is defined
+
 - name: Check f2b_jails list values
   assert:
     that:
       - item.name is defined
+      - item.name is string
       - item.name | length > 0
       - item.settings is defined
-      - item.settings | type_debug == 'list'
+      - item.settings is iterable
       - item.settings | reject('equalto','') | list | length > 0
     quiet: yes
   when:
     - f2b_jails is defined
-    - f2b_jails | type_debug == 'list'
   loop: "{{ f2b_jails }}"
   loop_control:
     label: "{{ item.name | default('undefined') }}"
@@ -79,13 +85,13 @@
   assert:
     that:
       - item.key is defined
+      - item.key is string
       - item.key | length > 0
       - item.value is defined
       - item.value | string | length > 0
     quiet: yes
   when:
     - f2b_jails is defined
-    - f2b_jails | type_debug == 'list'
   loop: "{{ f2b_jails | map(attribute='settings') | flatten }}"
   loop_control:
     label: "{{ item.key | default('undefined') }}"

@@ -51,3 +51,11 @@ user_group_add:
 
 user_group_remove:
   - mygroup
+
+# Specify aliases to be created/removed from user's bashrc file
+# Command is not required when state is absent
+user_alias:
+  - user: example
+    alias: myls
+    command: ls -l --color=auto
+    state: present

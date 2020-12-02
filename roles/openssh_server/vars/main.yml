@@ -1,6 +1,8 @@
 ---
 # vars file for openssh-server
 
+openssh_valid_log_levels: "['QUIET','FATAL','ERROR','INFO','VERBOSE']"
+
 _host_keys_group:
   default: root
   RedHat: ssh_keys

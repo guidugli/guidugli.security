@@ -5,6 +5,26 @@
 # file that can be written by everyone (others).
 fs_world_writeable_fix_enabled: yes
 
+#### CRYPTTAB ####
+
+# all crypttab variables are optional
+
+# Path to store files storing keys for encrypted partitions
+#fspart_cryptkeys_path: /etc/cryptkeys
+
+# Crypttab entries
+#fspart_crypttab_entries:
+#  name: luks-test
+#  backing_device: UUID=6b244d35-a72b-1234-5678-4258d364809c
+#  password: /etc/cryptkeys/mykey
+#  opts: discard,luks
+
+# Files to be copied to fspart_cryptkeys_path defined path
+#fspart_cryptkeys_files:
+#  - { name: mykey, src: cryptkeys/mykey }
+
+#### PARTITIONS ####
+
 # List of partitions that must be present on the system
 # and the mount options they should have.
 
@@ -59,11 +79,11 @@ fspart_allow_reboot: yes
 # List the log files to ignore when removing permissions g-wx and o-rwx
 # and directories with permission g-w and o-rwx
 # Not implemented yet
-fspart_log_exception:
-  - /var/log
-  - /var/log/gdm
-  - /var/log/journal
-  - /var/log/btmp
-  - /var/log/journal/9ac3b4eccf62428bb4ae3d755c53b793
-  - /var/log/lastlog
-  - /var/log/wtmp
+#fspart_log_exception:
+#  - /var/log
+#  - /var/log/gdm
+#  - /var/log/journal
+#  - /var/log/btmp
+#  - /var/log/journal/9ac3b4eccf62428bb4ae3d755c53b793
+#  - /var/log/lastlog
+#  - /var/log/wtmp

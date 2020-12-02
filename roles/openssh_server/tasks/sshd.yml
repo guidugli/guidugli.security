@@ -28,9 +28,6 @@
     owner: root
     group: root
     mode: '0600'
-    setype: etc_t
-    serole: object_r
-    seuser: system_u
 
 - name: Ensure SSH access is limited
   block:
@@ -38,37 +35,37 @@
       lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: '^\s*AllowUsers\s'
-        line: "AllowUsers {{ sshd_config.access_control.allow_users | join(' ') }}"
+        line: "AllowUsers {{ openssh_allow_users | join(' ') }}"
         insertafter: EOF
         state: present
-      when: sshd_config.access_control.allow_users is defined and (sshd_config.access_control.allow_users | length>0)
+      when: openssh_allow_users is defined and (openssh_allow_users | length>0)
 
     - name: Configure AllowGroups
       lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: '^\s*AllowGroups\s'
-        line: "AllowGroups {{ sshd_config.access_control.allow_groups | join(' ') }}"
+        line: "AllowGroups {{ openssh_allow_groups | join(' ') }}"
         insertafter: EOF
         state: present
-      when: sshd_config.access_control.allow_groups is defined and (sshd_config.access_control.allow_groups | length>0)
+      when: openssh_allow_groups is defined and (openssh_allow_groups | length>0)
 
     - name: Configure DenyUsers
       lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: '^\s*DenyUsers\s'
-        line: "DenyUsers {{ sshd_config.access_control.deny_users | join(' ') }}"
+        line: "DenyUsers {{ openssh_deny_users | join(' ') }}"
         insertafter: EOF
         state: present
-      when: sshd_config.access_control.deny_users is defined and (sshd_config.access_control.deny_users | length>0)
+      when: openssh_deny_users is defined and (openssh_deny_users | length>0)
 
     - name: Configure DenyGroups
       lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: '^\s*DenyGroups\s'
-        line: "DenyGroups {{ sshd_config.access_control.deny_groups | join(' ') }}"
+        line: "DenyGroups {{ openssh_deny_groups | join(' ') }}"
         insertafter: EOF
         state: present
-      when: sshd_config.access_control.deny_groups is defined and (sshd_config.access_control.deny_groups | length>0)
+      when: openssh_deny_groups is defined and (openssh_deny_groups | length>0)
   tags:
     - SSHD_ACCESS_CONTROL
 
@@ -137,32 +134,31 @@
     state: present
     validate: /usr/sbin/sshd -f %s -t
   loop:
-    - { name: 'Port', value: "{{ sshd_config.port }}" }
-    - { name: 'IgnoreRhosts', value: 'yes' }
-    - { name: 'HostbasedAuthentication', value: 'no' }
-    - { name: 'PermitRootLogin', value: 'no' }
-    - { name: 'PermitEmptyPasswords', value: 'no' }
-    - { name: 'PermitUserEnvironment', value: 'no' }
-    - { name: 'UsePAM', value: 'yes' }
-    - { name: 'UseDNS', value: "{{ sshd_config.use_dns }}" }
-    - { name: 'LogLevel', value: "{{ sshd_config.log_level }}" }
-    - { name: 'X11Forwarding', value: "{{ sshd_config.x11forwarding }}" }
-    - { name: 'MaxAuthTries', value: "{{ sshd_config.max_auth_tries }}" }
-    - { name: 'ClientAliveCountMax', value: "{{ sshd_config.client_alive_count_max }}" }
-    - { name: 'ClientAliveInterval', value: "{{ sshd_config.client_alive_interval }}" }
-    - { name: 'LoginGraceTime', value: "{{ sshd_config.login_grace_time }}" }
-    - { name: 'AllowTcpForwarding', value: "{{ sshd_config.allow_tcp_forwarding }}" }
-    - { name: 'Banner', value: "{{ sshd_config.banner }}" }
-    - { name: 'AllowTcpForwarding', value: "{{ sshd_config.allow_tcp_forwarding }}" }
-    - { name: 'MaxStartups', value: "{{ sshd_config.max_startups }}" }
-    - { name: 'MaxSessions', value: "{{ sshd_config.max_sessions }}" }
+    - { name: 'Port', value: "{{ openssh_port }}" }
+    - { name: 'IgnoreRhosts', value: "{{ 'yes' if openssh_ignore_rhosts else 'no' }}" }
+    - { name: 'HostbasedAuthentication', value: "{{ 'yes' if openssh_host_based_authentication else 'no' }}" }
+    - { name: 'PermitRootLogin', value: "{{ 'yes' if openssh_permit_root_login else 'no' }}" }
+    - { name: 'PermitEmptyPasswords', value: "{{ 'yes' if openssh_permit_empty_passwords else 'no' }}" }
+    - { name: 'PermitUserEnvironment', value: "{{ openssh_permit_user_environment }}" }
+    - { name: 'UsePAM', value: "{{ 'yes' if openssh_use_pam else 'no' }}" }
+    - { name: 'UseDNS', value: "{{ 'yes' if openssh_use_dns else 'no' }}" }
+    - { name: 'LogLevel', value: "{{ openssh_log_level }}" }
+    - { name: 'X11Forwarding', value: "{{ 'yes' if openssh_x11forwarding else 'no' }}" }
+    - { name: 'MaxAuthTries', value: "{{ openssh_max_auth_tries }}" }
+    - { name: 'ClientAliveCountMax', value: "{{ openssh_client_alive_count_max }}" }
+    - { name: 'ClientAliveInterval', value: "{{ openssh_client_alive_interval }}" }
+    - { name: 'LoginGraceTime', value: "{{ openssh_login_grace_time }}" }
+    - { name: 'AllowTcpForwarding', value: "{{ 'yes' if openssh_allow_tcp_forwarding else 'no' }}" }
+    - { name: 'Banner', value: "{{ openssh_banner }}" }
+    - { name: 'MaxStartups', value: "{{ openssh_max_startups }}" }
+    - { name: 'MaxSessions', value: "{{ openssh_max_sessions }}" }
   loop_control:
     label: "{{ item.name }}: {{ item.value }}"
   notify: restart sshd
 
 - name: Setup selinux for alternate SSH port
   seport:
-    ports: "{{ sshd_config.port }}"
+    ports: "{{ openssh_port }}"
     proto: "tcp"
     setype: "ssh_port_t"
     state: "present"
@@ -183,11 +179,16 @@
 - name: Ensure SSH is reloaded if need be
   meta: flush_handlers
 
+- debug: var=configured_port
+- debug: var=ansible_port
+
 # We're done, make sure ansible_port is set properly so that any tasks
 # after this use the right ansible_port.
 - name: Ensure we use the configured SSH port for the remainder of the role
   set_fact:
     ansible_port: "{{ configured_port }}"
+
+- debug: var=ansible_port
 
 # Gather facts should be set to false when running this role since it will
 # fail if the Ansible SSH port is not set correctly.

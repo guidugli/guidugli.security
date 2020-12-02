@@ -1,0 +1,46 @@
+---
+# vars file for kvm
+
+kvm_services: ['libvirtd', 'libvirt-guests']
+
+_kvm_packages:
+  default: ['python3-lxml', 'qemu-kvm', 'virt-manager', 'bridge-utils', 'libnss-libvirt', 'libguestfs-tools', 'virtinst', 'virt-top']
+  Fedora: ['python3-lxml', 'libvirt', 'libvirt-nss', 'virt-install', 'libvirt-daemon-kvm', 'virt-manager', 'virt-viewer', 'libguestfs-tools', 'python3-libguestfs', 'virt-top']
+  CentOS: ['python3-lxml', 'libvirt', 'libvirt-nss', 'virt-install', 'libvirt-daemon-kvm', 'virt-manager', 'virt-viewer', 'libguestfs-tools', 'python3-libguestfs', 'virt-top']
+  RedHat: ['python3-lxml', 'libvirt', 'libvirt-nss', 'virt-install', 'libvirt-daemon-kvm', 'virt-manager', 'virt-viewer', 'libguestfs-tools', 'python3-libguestfs', 'virt-top']
+
+kvm_packages: "{{ _kvm_packages[ansible_distribution ~ '-' ~ ansible_distribution_major_version] | default(_kvm_packages[ansible_distribution]) | default(_kvm_packages['default']) }}"
+
+kvm_sebool_map:
+  kvm_staff_use_svirt: staff_use_svirt
+  kvm_unprivuser_use_svirt: unprivuser_use_svirt
+  kvm_virt_sandbox_use_audit: virt_sandbox_use_audit
+  kvm_virt_sandbox_use_netlink: virt_sandbox_use_netlink
+  kvm_virt_sandbox_use_sys_admin: virt_sandbox_use_sys_admin
+  kvm_virt_transition_userdomain: virt_transition_userdomain
+  kvm_virt_use_comm: virt_use_comm
+  kvm_virt_use_execmem: virt_use_execmem
+  kvm_virt_use_fusefs: virt_use_fusefs
+  kvm_virt_use_nfs: virt_use_nfs
+  kvm_virt_use_rawip: virt_use_rawip
+  kvm_virt_use_samba: virt_use_samba
+  kvm_virt_use_sanlock: virt_use_sanlock
+  kvm_virt_use_usb: virt_use_usb
+  kvm_virt_use_xserver: virt_use_xserver
+
+kvm_qemu_link: "{{ _kvm_qemu_link[ansible_distribution ~ '-' ~ ansible_distribution_major_version] | default(_kvm_qemu_link[ansible_distribution]) | default(_kvm_qemu_link['default']) }}"
+
+_kvm_qemu_link:
+  default: []
+  Debian:
+    src: /usr/bin/kvm
+    dest: /usr/bin/qemu-kvm
+  Ubuntu:
+    src: /usr/bin/kvm
+    dest: /usr/bin/qemu-kvm
+  CentOS:
+    src: /usr/libexec/qemu-kvm
+    dest: /usr/bin/qemu-kvm
+  RedHat:
+    src: /usr/libexec/qemu-kvm
+    dest: /usr/bin/qemu-kvm

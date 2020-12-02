@@ -3,6 +3,10 @@
   hosts: all
   become: yes
   tasks:
+
+    - name: Include test vars
+      include_vars: vars/test.yml
+
     - name: "Include kernel_config"
       include_role:
         name: "kernel_config"

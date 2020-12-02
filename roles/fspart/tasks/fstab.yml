@@ -28,13 +28,15 @@
           - item.fstype in fspart_allowed_fstype
         quiet: yes
 
+    - debug: var=item
+
     - name: Create entry in fstab
       mount:
         path: "{{ item.name }}"
         src: "{{ item.src }}"
         fstype: "{{ item.fstype }}"
         opts: "{{ item.mount_options | join(',') }}"
-        state: mounted
+        state: "{{ item.mount_state | default('mounted') }}"
 
   when: fstab_cmd_result.stdout | length == 0
 

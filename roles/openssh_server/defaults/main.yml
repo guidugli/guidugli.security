@@ -1,24 +1,27 @@
 ---
 # defaults file for openssh-server
 
-# NOTE: port will only work if ansible_port is not provided for the device, i.e.,
-#       if ansible port is provided, this role will use it; if it is not provided,
-#       this role will try the sshd_config.port value; if not provided, use port 22.
+openssh_port: 22
+openssh_log_level: INFO
+openssh_x11forwarding: no
+openssh_max_auth_tries: 4
+openssh_client_alive_interval: 300
+openssh_client_alive_count_max: 0
+openssh_login_grace_time: 60
+openssh_banner: /etc/issue.net
+openssh_allow_tcp_forwarding: no
+openssh_max_sessions: 4
+openssh_ignore_rhosts: yes
+openssh_host_based_authentication: no
+openssh_permit_root_login: no
+openssh_permit_empty_passwords: no
+openssh_permit_user_environment: no
+openssh_use_pam: yes
+openssh_max_startups: '10:30:60'
+openssh_use_dns: yes
 
-sshd_config:
-  port: 12190   
-  log_level: 'INFO'
-  x11forwarding: 'no'
-  max_auth_tries: 4
-  client_alive_interval: 300
-  client_alive_count_max: 0
-  login_grace_time: 60
-  banner: '/etc/issue.net'
-  allow_tcp_forwarding: 'no'
-  max_sessions: 4
-  access_control:
-    allow_users: ['myuser']
-    allow_groups:
-    DenyUsers:
-    DenyGroups:
- 
+#openssh_allow_users: ['myuser']
+#openssh_allow_groups: []
+#openssh_deny_users: []
+#openssh_deny_groups: []
+
