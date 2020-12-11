@@ -23,7 +23,7 @@ user_inactive_days: 30
 user_warn_age: 7
 
 # UMASK to be used by all users
-user_umask: '027'
+#user_umask: '027'
 
 # Shell timeout in seconds
 user_shell_timeout: 900

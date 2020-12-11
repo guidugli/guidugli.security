@@ -11,10 +11,17 @@
     - user_min_days
     - user_inactive_days
     - user_warn_age
-    - user_umask
     - user_shell_timeout
   loop_control:
     label: "{{ item }}: {{ vars[item] | default('undefined') }}"
+
+- name: Validate optional umask setting
+  assert:
+    that:
+      - user_umask | int > 0
+      - user_umask is regex('^[0-7]{3,4}$')
+    quiet: yes
+  when: user_umask is defined
 
 - name: Validate user_fix_existing_accounts value
   assert:

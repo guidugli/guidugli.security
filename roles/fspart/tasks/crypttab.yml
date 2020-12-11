@@ -31,3 +31,13 @@
     state: present
   loop: "{{ fspart_crypttab_entries }}"
   when: fspart_crypttab_entries is defined
+
+- name: Run systemd to load the crypttab entries
+  vars:
+    encoded: "{{ item.name | replace('-','\\x2d') }}"
+  systemd:
+    name: "systemd-cryptsetup@{{ encoded }}"
+    state: started
+    daemon_reload: yes
+  loop: "{{ fspart_crypttab_entries }}"
+  when: fspart_crypttab_entries is defined

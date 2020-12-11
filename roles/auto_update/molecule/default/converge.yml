@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: Include test vars
+      include_vars: vars/test.yml
+
+    - name: "Include auto_update"
+      include_role:
+        name: "auto_update"

@@ -43,6 +43,8 @@
     - openssh_permit_user_environment
     - openssh_use_pam
     - openssh_use_dns
+    - openssh_password_authentication
+    - openssh_permit_tunnel
 
 - name: Check list variables
   assert:

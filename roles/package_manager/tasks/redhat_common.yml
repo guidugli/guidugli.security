@@ -15,7 +15,7 @@
     enabled: no
     state: stopped
   ignore_errors: true  #Remove for RHEL
-  when: package_management.disable_rhnsd and ansible_distribution != "Fedora"
+  when: pm_disable_rhnsd and ansible_distribution != "Fedora"
 
 # GPGKeys are used to sign packages. Enabling them will mean that all packages
 #  from a given repo must be signed with the appropriate key
@@ -46,6 +46,6 @@
       with_items: "{{ pkgmgr_yumrepos.files }}"
       loop_control:
         label: "{{ item.path }}"
-      when: item.path not in (package_management.gpgcheck_excludes | default([]))
+      when: item.path not in (pm_gpgcheck_excludes | default([]))
 
-  when: package_management.gpgcheck
+  when: pm_gpgcheck

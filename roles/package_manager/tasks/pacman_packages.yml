@@ -15,19 +15,19 @@
 - name: Update all packages
   pacman:
     upgrade: yes
-  when: package_management.update_system
+  when: pm_update_system
   notify: reboot
 
 - name: Install packages
   apk:
-    name: "{{ package_management.install_packages }}"
+    name: "{{ pm_install_packages }}"
     state: present
 
 - name: Delete packages
   apk:
-    name: "{{ package_management.remove_packages }}"
+    name: "{{ pm_remove_packages }}"
     state: absent
     # Remove each target specified including all of their dependencies, provided that 
     # (A) they are not required by other packages; and 
     # (B) they were not explicitly installed by the user. 
-    extra_args: "{{ '--recursive' if package_management.autoremove else '' }}"
+    extra_args: "{{ '--recursive' if pm_autoremove else '' }}"

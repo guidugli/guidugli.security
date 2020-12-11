@@ -74,6 +74,19 @@
     mode: "0664"
   notify: update grub
 
+- name: ensure file already exists at dest to work around 'invalid selinux context' issue
+  file:
+    path: "{{ grub_cfg_path }}/user.cfg"
+    state: touch
+    owner: root
+    group: root
+    setype: boot_t
+    serole: object_r
+    seuser: system_u
+    mode: '0700'
+    modification_time: preserve
+    access_time: preserve
+
 # Set grub password
 - name: Ensure GRUB password is set on RedHat systems
   lineinfile:
@@ -82,6 +95,11 @@
     line: "GRUB2_PASSWORD={{ grub_password  }}"
     create: yes
     mode: '0700'
+    owner: root
+    group: root
+    setype: boot_t
+    serole: object_r
+    seuser: system_u
   when: grub_password is defined and ansible_os_family == 'RedHat'
   notify: update grub
 

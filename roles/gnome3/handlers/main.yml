@@ -1,0 +1,5 @@
+---
+# handlers file for gnome3
+
+- name: dconf update
+  command: "umask 0022 && dconf update"

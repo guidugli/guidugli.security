@@ -1,0 +1,4 @@
+# Prevent users from changing values for the following keys:
+{% for key in gnome_lock_settings %}
+{{ key }}
+{% endfor %}

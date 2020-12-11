@@ -1,0 +1,525 @@
+---
+# defaults file for gnome3
+
+#### GNOME SETTINGS TO LOCK ####
+
+gnome_lock_settings:
+  - org/gnome/Maps/checkin-foursquare-broadcast-twitter
+  - org/gnome/Maps/checkin-foursquare-privacy
+  - org/gnome/Maps/checkin-facebook-privacy
+  - org/gnome/Maps/checkin-foursquare-broadcast-facebook
+  - org/gnome/desktop/file-sharing/require-password
+  - org/gnome/online-accounts/whitelisted-providers
+  - org/gnome/rhythmbox/sharing/enable-sharing
+
+
+#### LOGIN PAGE BANNER AND IMAGE ####
+
+# Message to be displayed on login screen
+banner_graphical_msg: "Authorized uses only. All activity may be monitored and reported."
+
+# Copy file from files directory to /usr/share/pixmaps/logo
+# and set GDM dconf profile to use it
+banner_logo_file_name: greeter-logo.png
+
+#### BACKGROUND ####
+
+# URI to use for the background image. Note that the backend only supports
+# local (file://) URIs.
+gnome_background_picture_uri: "file:///usr/share/backgrounds/fedora-workstation/aurora-over-iceland.png"
+
+# Determines how the image set by wallpaper_filename is rendered. Possible
+# values are “none”, “wallpaper”, “centered”, “scaled”, “stretched”, “zoom”, “spanned”.
+gnome_background_picture_options: zoom
+
+# Opacity with which to draw the background picture.
+gnome_background_picture_opacity: 100
+
+# Left or Top color when drawing gradients, or the solid color.
+gnome_background_primary_color: "#000000000000"
+
+# Right or Bottom color when drawing gradients, not used for solid color.
+gnome_background_secondary_color: "#000000000000"
+
+# How to shade the background color. Possible values are “horizontal”,
+# “vertical”, and “solid”.
+gnome_background_color_shading_type: solid
+
+# If set to true, then file manager will draw the icons on the desktop.
+gnome_background_show_desktop_icons: yes
+
+#### WEATHER ####
+
+# The unit of speed used for showing weather (for example for wind speed).
+# Valid values are “ms” (meters per second), “kph” (kilometers per hour),
+# “mph” (miles per hour), “knots” and “bft” (Beaufort scale).
+gnome_speed_unit: kph
+
+# The unit of pressure used for showing weather. 
+# Valid values are “kpa” (kilopascal), “hpa” (hectopascal), “mb” (millibar,
+# mathematically equivalent to 1 hPa but shown differently), “mm-hg”
+# (millimeters of mercury), “inch-hg” (inches of mercury), “atm” (atmospheres).
+gnome_pressure_unit: atm
+
+# The unit of distance used for showing weather (for example for visibility
+# or for distance of important events). Valid values are “meters”, “km” and “miles”.
+gnome_distance_unit: km
+
+# The unit of temperature used for showing weather. Valid values are “kelvin”,
+# “centigrade” and “fahrenheit”.
+gnome_temperature_unit: centigrade
+
+# Decides whether to fetch current location or not.
+gnome_weather_auto_location: no
+
+#### SESSION ####
+
+# If enabled, gnome-session will save the session automatically.
+gnome_auto_save_session: no
+
+# If enabled, gnome-session will prompt the user before ending a session.
+gnome_logout_prompt: yes
+
+# The number of seconds of inactivity before the session is considered idle.
+gnome_session_idle_delay: 0
+
+#### CALCULATOR ####
+
+# Currencies to convert from to
+gnome_calculator_source_currency: USD
+gnome_calculator_target_currency: BRL
+
+# How often the currency exchange rates should be updated
+# Valid values are 604800 (weekly) and 86400 (daily)
+gnome_calculator_refresh_interval: 86400
+
+# Calculator mode: basic, advanced, financial, programming, keyboard
+gnome_calculator_mode: advanced
+
+#### WORLD CLOCKS ####
+
+# Turn geolocation support on and off.
+gnome_clock_geolocation: no
+
+#### CALENDAR ####
+
+# If true, display the ISO week date in the calendar.
+gnome_show_weekdate: false
+
+#### DATE/TIME ####
+
+# Whether to automatically update the timezone using geolocation.
+gnome_automatic_timezone: no
+
+#### INTERFACE ####
+
+# Name of the default font used by gtk+
+gnome_font_name: 'Cantarell 11'
+
+# If true, ignore the titlebar-font option, and use the standard
+# application font for window titles.
+gnome_titlebar_uses_system_font: yes
+
+# A font description string describing a font for window titlebars. The size
+# from the description will only be used if the titlebar-font-size option is
+# set to 0. Also, this option is disabled if the titlebar-uses-desktop-font
+# option is set to true.
+gnome_titlebar_font: 'Cantarell Bold 11'
+
+# This option determines the effects of middle-clicking on the title bar.
+# Current valid options are “toggle-shade”, which will shade/unshade the window,
+# “toggle-maximize” which will maximize/unmaximize the window,
+# “toggle-maximize-horizontally” and “toggle-maximize-vertically” which will
+# maximize/unmaximize the window in that direction only, “minimize” which will minimize
+# the window, “shade” which will roll the window up, “menu” which will display the window
+# menu, “lower” which will put the window behind all the others, and “none” which will
+# not do anything
+gnome_action_middle_click_titlebar: none
+
+# This option determines the effects of right-clicking on the title bar.
+# same options as gnome_action_middle_click_titlebar
+gnome_action_right_click_titlebar: menu
+
+# This option determines the effects of double-clicking on the title bar.
+# same options as gnome_action_middle_click_titlebar
+gnome_action_double_click_titlebar: toggle-maximize
+
+# Size of icons in toolbars, either “small” or “large”.
+gnome_toolbar_icon_size: large
+
+# Whether the user can detach toolbars and move them around
+gnome_toolbar_detachable: no
+
+# Toolbar style. Valid values are "both", "both-horiz", "icons" and "text"
+gnome_toolbar_style: both-horiz
+
+# Whether the user can detach menubars and move them around
+gnome_menubar_detachable: no
+
+# Whether menus should have a tearoff
+gnome_menus_have_tearoff: no
+
+# Keyboard shortcut to open the menu bars
+gnome_menubar_accel: 'F10'
+
+# Name of the default font used for reading documents
+gnome_document_font_name: 'Cantarell 11'
+
+# If true, the activities overview can be accessed by moving the mouse to the top-left corner.
+gnome_enable_hot_corners: yes
+
+# Name of a monospaced (fixed-width) font for use in locations like terminals.
+gnome_monospace_font_name: "Source Code Pro 10"
+
+# Factor used to enlarge or reduce text display, without changing font size.
+gnome_text_scaling_factor: '1.0'
+
+# Integer factor used to scale windows by. For use on high-dpi screens.
+# 0 means pick automatically based on monitor.
+gnome_scaling_factor: 0
+
+# Size of the cursor used as cursor theme.
+gnome_cursor_size: 24
+
+# Whether the cursor should blink.
+gnome_cursor_blink: yes
+
+# Length of the cursor blink cycle, in milliseconds.
+gnome_cursor_blink_time: 1200
+
+# Time after which the cursor stops blinking, in seconds.
+gnome_cursor_blink_timeout: 10
+
+# If true, display weekday in the clock, in addition to time.
+gnome_clock_show_weekday: no
+
+# If true, display date in the clock, in addition to time.
+gnome_clock_show_date: yes
+
+# If true, display seconds in the clock.
+gnome_clock_show_seconds: no
+
+# Whether the clock displays in 24h or 12h format
+gnome_clock_format: '24h'
+
+# Whether animations should be displayed. Note: this is a global key, it changes
+# the behaviour of the window manager, the panel, etc.
+gnome_enable_animations: yes
+
+# Basename of the default theme used by gtk+.
+# Other possible values: Adwaita, HighContrast, HighContrastInverse
+gnome_gtk_theme: Adwaita-dark
+
+# Cursor theme name. Used only by Xservers that support the Xcursor extension.
+gnome_cursor_theme: Adwaita
+
+# Icon theme to use for the panel, nautilus etc.
+# Other possible values: gnome, hicolor, HighContrast
+gnome_icon_theme: Adwaita
+
+# Basename of the default keybinding theme used by gtk+.
+gnome_gtk_key_theme: Default
+
+# Whether scrollbars should be overlayed as indicators. Depending on input devices
+# in use, permanent scrollbars may still be displayed.
+gnome_overlay_scrolling: yes
+
+# If true, gtk+ uses the primary paste selection, usually triggered by a middle
+# mouse button click.
+gnome_gtk_enable_primary_paste: yes
+
+# If true, pressing a key will highlight the current pointer location on screen
+gnome_locate_pointer: no
+
+# if true, display battery percentage in the status menu, in addition to the icon.
+gnome_show_battery_percentage: no
+
+# Arrangement of buttons on the titlebar. The value should be a string, such as
+# “menu:minimize,maximize,spacer,close”; the colon separates the left corner of the
+# window from the right corner, and the button names are comma-separated. Duplicate
+# buttons are not allowed. Unknown button names are silently ignored so that buttons
+# can be added in future metacity versions without breaking older versions. A special
+# spacer tag can be used to insert some space between two adjacent buttons.
+gnome_button_layout: "appmenu:minimize,maximize,close"
+
+#### LOCKDOWN ####
+
+# Prevent users from writing or modifying files on removable storage devices
+# (i.e. flash disks, mobile phones, cameras).
+gnome_mount_removable_storage_dev_as_read_only: no
+
+# Prevent the user from accessing the terminal or specifying a command line to
+# be executed. For example, this would disable access to the panel’s
+# “Run Application” dialog.
+gnome_disable_command_line: no
+
+# Prevent the user from logging out.
+gnome_disable_logout: no
+
+# Prevent the user from printing. For example, this would disable access
+# to all applications’ “Print” dialogs.
+gnome_disable_printing: no
+
+# Prevent the user to lock his screen.
+gnome_disable_lock_screen: no
+
+# Prevent the user from modifying print settings. For example, this would disable
+# access to all applications’ “Print Setup” dialogs.
+gnome_disable_print_setup: no
+
+# Prevent the user from switching to another account while his session is active.
+gnome_disable_user_switching: no
+
+# Prevent running any URL or MIME type handler applications.
+gnome_disable_application_handlers: no
+
+# Prevent the user from saving files to disk. For example, this would disable
+# access to all applications’ “Save as” dialogs.
+gnome_disable_save_to_disk: no
+
+# Stop the user from modifying user accounts. By default, we allow adding and
+# removing users, as well as changing other users settings.
+gnome_disable_user_administration: no
+
+#### GNOME SHELL / ACTIVITIES MENU ####
+
+# The applications corresponding to these identifiers will be
+# displayed in the favorites area.
+gnome_favorite_apps: "['firefox.desktop', 'org.gnome.Calendar.desktop', 'rhythmbox.desktop', 'virt-manager.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.gedit.desktop']"
+
+# Disable all extensions the user has enabled without affecting
+# the “enabled-extension” setting.
+gnome_shell_disable_user_extensions: no
+
+# The shell will request a password when an encrypted device or a remote
+# filesystem is mounted. If the password can be saved for future use a
+# “Remember Password” checkbox will be present. This key sets the default
+# state of the checkbox.
+gnome_remember_mount_password: no
+
+#### MEDIA HANDLING - AUTORUN ####
+
+# If set to true, then Nautilus will never prompt nor autorun/autostart
+# programs when a medium is inserted.
+gnome_autorun_never: no
+
+# If set to true, then Nautilus will automatically open a folder when media is
+# automounted. This only applies to media where no known x-content/* type was
+# detected; for media where a known x-content type is detected, the user
+# configurable action will be taken instead.
+gnome_automount_open: yes
+
+# If set to true, then Nautilus will automatically mount media such as user-visible
+# hard disks and removable media on start-up and media insertion.
+gnome_automount: yes
+
+#### PRIVACY ####
+
+# If TRUE, applications should not use the microphone.
+gnome_disable_microphone: no
+
+# If set to true, the system will make an effort to not divulge the user’s
+# identity on screen or on the network.
+gnome_hide_identity: no
+
+# Recently used files will be remembered for this many days. If set to 0, recent files 
+# will not be remembered; if set to -1, they will be retained indefinitely.
+gnome_recent_files_max_age: -1
+
+# If TRUE, automatically remove temporary files when they are
+# older than “old-files-age” days.
+gnome_remove_old_tmp_files: no
+
+# If set to “lockscreen”, only when the lock screen is present new USB devices will
+# be rejected; if set to “always”, all new USB devices will always be rejected.
+gnome_usb_protection_level: lockscreen
+
+# If TRUE, applications should not make sound.
+gnome_disable_sound_output: no
+
+# Consider trash and temporary files old after this many days.
+gnome_old_files_age: 30
+
+# If FALSE, application usage will not be monitored and recorded.
+gnome_remember_app_usage: yes
+
+# If TRUE, applications should not use the camera.
+gnome_disable_camera: no
+
+# If FALSE, applications will not remember recently used files.
+gnome_remember_recent_files: yes
+
+# If TRUE, anonymized reports will be sent automatically to the vendor.
+gnome_report_technical_problems: no
+
+# If TRUE, automatically remove files from the trash when they are older than “old-files-age” days.
+gnome_remove_old_trash_files: no
+
+# Whether the users full name is shown in the user menu or not.
+gnome_show_full_name_top_bar: yes
+
+# If FALSE, no anonymous installation or removal information will be sent to the vendor.
+gnome_send_software_usage_stats: no
+
+# If the USBGuard service is present and this setting is enabled, USB devices will be protected as configured in the usb-protection-level setting.
+gnome_usb_protection: yes
+
+# If true, applications are allowed to access location information.
+gnome_enable_system_location: no
+
+# Configures the maximum level of location accuracy applications are allowed to see.
+# Valid options are “country”, “city”, “neighborhood”, “street”, and “exact”
+# (typically requires GPS receiver). Please keep in mind that this only controls what
+# GeoClue will allow applications to see and they can find user’s location on their own
+# using network resources (albeit with street-level accuracy at best).
+gnome_location_max_accuracy_level: country
+
+#### ONLINE ACCOUNTS ####
+
+# A list of strings representing the providers that are allowed to be loaded
+# (default: 'all'). This is only evaluated on startup.
+# THIS IS A STRING VARIABLE
+gnome_online_accounts_whitelisted_providers: "['fedora', 'imap_smtp', 'owncloud']"
+
+#### SYSTEM LOCALE ####
+
+# Specify the locale to be used for displaying dates, times and numbers formats.
+gnome_locale_region: "en_GB.UTF-8"
+
+#### POWER SETTINGS ####
+
+# If the screen should be dimmed to save power when the computer is idle.
+gnome_power_idle_dim: yes
+
+# The type of sleeping that should be performed when the computer is inactive.
+gnome_power_sleep_inactive_battery_type: suspend
+
+# The amount of time in seconds the computer on battery power needs to be inactive before it goes to sleep. A value of 0 means never.
+gnome_power_sleep_inactive_battery_timeout: 1200
+
+# This is the laptop panel screen brightness used when the session is idle.
+gnome_power_idle_brightness: 30
+
+# If the ambient light sensor functionality is enabled.
+gnome_power_ambient_enabled: yes
+
+# The type of sleeping that should be performed when the computer is inactive.
+gnome_power_sleep_inactive_ac_type: suspend
+
+# The amount of time in seconds the computer on AC power needs to be inactive before it goes to sleep. A value of 0 means never.
+gnome_power_sleep_inactive_ac_timeout: 0
+
+# The action to take when the system power button is pressed. This action is hard-coded (and the setting ignored) on virtual machines (power off) and tablets (suspend).
+gnome_power_button_action: suspend
+
+#### NAUTILUS / FILE CHOOSER ####
+
+# When a folder is visited this viewer is used unless you have selected another view for that particular folder.
+# Possible values are “list-view”, and “icon-view”.
+gnome_default_folder_view: list-view
+
+# If set to true, then folders are shown before files in the list.
+gnome_sort_directories_first: yes
+
+# Controls whether to show hidden files or not.
+gnome_show_hidden_files: no
+
+#### FILE SHARING ####
+
+# When to ask for passwords. Possible values are "never", "on_write", and "always".
+gnome_file_sharing_ask_password: always
+
+
+#### MAPS ####
+
+# Indicates if Foursquare should broadcast the check-in as a tweet in the Twitter account associated with the Foursquare account.
+gnome_maps_checkin_foursquare_broadcast_twitter: no
+
+# Latest used Foursquare check-in privacy setting. Possible values are: public, followers or private.
+gnome_maps_checkin_foursquare_privacy: private
+
+# Latest used Facebook check-in privacy setting. Possible values are: EVERYONE, FRIENDS_OF_FRIENDS, ALL_FRIENDS or SELF.
+gnome_maps_checkin_facebook_privacy: SELF
+
+# Indicates if Foursquare should broadcast the check-in as a post in the Facebook account associated with the Foursquare account.
+gnome_maps_checkin_foursquare_broadcast_facebook: no
+
+#### SCREENSAVER ####
+
+# Set this to TRUE to offer an option in the unlock dialog to switch
+# to a different user account.
+gnome_screensaver_user_switch_enabled: yes
+
+# Whether the user’s full name is shown in the lock screen or not. This only affects
+# the screen shield, the name is always shown in the unlock dialog.
+gnome_screensaver_show_full_name_in_top_bar: yes
+
+# Set this to TRUE to lock the screen when the screensaver goes active.
+gnome_screensaver_lock_enabled: yes
+
+# The number of seconds after screensaver activation before locking the screen.
+gnome_screensaver_lock_delay: 30
+
+# URI to use for the background image. Note that the backend only supports
+# local (file://) URIs.
+gnome_screensaver_picture_uri: ""
+
+# Determines how the image set by wallpaper_filename is rendered. Possible
+# values are “none”, “wallpaper”, “centered”, “scaled”, “stretched”, “zoom”, “spanned”.
+gnome_screensaver_picture_options: zoom
+
+# Opacity with which to draw the background picture.
+gnome_screensaver_picture_opacity: 100
+
+# Left or Top color when drawing gradients, or the solid color.
+gnome_screensaver_primary_color: "#000000000000"
+
+# Right or Bottom color when drawing gradients, not used for solid color.
+gnome_screensaver_secondary_color: "#000000000000"
+
+# How to shade the background color. Possible values are “horizontal”,
+# “vertical”, and “solid”.
+gnome_screensave_color_shading_type: solid
+
+#### RHYTHMBOX ####
+
+# When enabled, Rhythmbox will require a password for others to access
+# your music over the network.
+gnome_rhythmbox_require_password: yes
+
+# Password that is required for accessing your shared music.
+gnome_rhythmbox_share_password: "{{ lookup('password', '/tmp/passwordfile chars=ascii_letters,digits,hexdigits,punctuation length=16') }}"
+
+# When enabled, Rhythmbox will search for shared music on your local network
+gnome_rhythmbox_enable_browsing: no
+
+# When enabled, Rhythmbox will share your music with other computers
+gnome_rhythmbox_enable_sharing: no
+
+#  Name other computers will see your music shared as
+gnome_rhythmbox_share_name: ""
+
+# When set prevents loading of plugins from the user's home directory
+gnome_rhythmbox_no_user_plugins: no
+
+# List of plugins that have previously been seen. 
+# Previously unseen plugins may be automatically enabled.
+gnome_rhythmbox_seen_plugins: "['rb', 'webremote', 'soundcloud', 'replaygain', 'pythonconsole', 'notification', 'mtpdevice', 'mpris', 'magnatune', 'lyrics', 'listenbrainz', 'ipod', 'im-status', 'grilo', 'fmradio', 'dbus-media-server', 'daap', 'cd-recorder', 'audioscrobbler', 'artsearch']"
+
+# List of active plugin names. These plugins will be loaded on startup if available.
+# This variable is a string variable, not an ansible list
+gnome_rhythmbox_active_plugins: "['rb', 'power-manager', 'notification', 'mtpdevice', 'mpris', 'mmkeys', 'iradio', 'ipod', 'generic-player', 'dbus-media-server', 'cd-recorder', 'audiocd', 'artsearch', 'android']"
+
+#### SOFTWARE ####
+
+# If disabled, GNOME Software will hide the updates panel, not perform any automatic
+# updates actions or prompt for upgrades.
+gnome_software_allow_updates: yes
+
+# If enabled, GNOME Software automatically downloads software updates in the
+# background, also installing ones that do not require a reboot.
+gnome_software_download_updates: yes
+
+# If enabled, GNOME Software notifies the user about updates that
+# happened whilst the user was idle.
+gnome_software_download_updates_notify: yes

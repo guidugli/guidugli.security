@@ -26,8 +26,8 @@
     set -o pipefail
     for usr in $(cut -d: -f1 /etc/shadow)
     do
-      [[ $(chage --list $usr | grep '^Last password change' | cut -d: -f2) > $(date) ]] &&
-      echo "$usr :$(chage -- list $usr | grep '^Last password change' | cut -d: -f2)"
+      [[ $(grep $usr /etc/shadow | cut -d: -f3) > $(($(date +%s) / 60 / 60 / 24)) ]] &&
+      echo "$usr :$(chage --list $usr | grep '^Last password change' | cut -d: -f2)"
     done
   register: user_cmd_result
   failed_when: false

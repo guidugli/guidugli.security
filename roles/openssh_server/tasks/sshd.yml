@@ -151,7 +151,8 @@
     - { name: 'AllowTcpForwarding', value: "{{ 'yes' if openssh_allow_tcp_forwarding else 'no' }}" }
     - { name: 'Banner', value: "{{ openssh_banner }}" }
     - { name: 'MaxStartups', value: "{{ openssh_max_startups }}" }
-    - { name: 'MaxSessions', value: "{{ openssh_max_sessions }}" }
+    - { name: 'PasswordAuthentication', value: "{{ 'yes' if openssh_password_authentication else 'no' }}" }
+    - { name: 'PermitTunnel', value: "{{ 'yes' if openssh_permit_tunnel else 'no' }}" }
   loop_control:
     label: "{{ item.name }}: {{ item.value }}"
   notify: restart sshd

@@ -4,7 +4,7 @@
 - name: Ensure specified groups exist with correct attributes
   group:
     name: "{{ item.name }}"
-    gid: "{{ item.uid | default(omit) }}"
+    gid: "{{ item.gid | default(omit) }}"
     state: present
   loop: "{{ user_group_add }}"
   loop_control:
@@ -43,7 +43,7 @@
 - name: Update
   set_fact:
     ansible_become_pass: "{{ user_new_password }}"
-    ansible_ssh_pass: "{{ user_new_password }}"
+    #ansible_ssh_pass: "{{ user_new_password }}"
   when:
     - user_new_password is defined
     - user_new_password | length > 0

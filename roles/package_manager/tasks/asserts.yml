@@ -9,21 +9,25 @@
   assert:
     quiet: yes
     that:
-      - (item.value | lower) in ['true','false']
-    msg: "Invalid value for {{ item.key }}. Allowed values are 'yes', 'no', 'true', 'false'."
-  loop: "{{ package_management | dict2items | selectattr('key', 'equalto', 'apk_upgrade_available|update_system|security_only|gpgcheck|disable_rhnsd') | list }}"
+      - (lookup('vars', item) | lower) in ['true','false']
+    msg: "Invalid value for {{ item }}. Allowed values are 'yes', 'no', 'true', 'false'."
+  loop:
+    - pm_apk_upgrade_available
+    - pm_update_system
+    - pm_security_only
+    - pm_gpgcheck
+    - pm_disable_rhnsd
 
 - name: Check integer variables
   assert:
     quiet: yes
     that:
-      - item.value | int(-1) >= 0
-    msg: "Invalid integer value for {{ item.key }}."
-  loop: "{{ package_management | dict2items | selectattr('key', 'match', 'cache_valid_time') | list }}"
+      - pm_cache_valid_time | int(-1) >= 0
+    msg: "Invalid integer value for pm_cache_valid_time"
 
 - name: Check if APT upgrade command is valid
   assert:
     quiet: yes
     that:
-      - package_management.apt_upgrade_command in ['dist','full','safe','yes']
+      - pm_apt_upgrade_command in ['dist','full','safe','yes']
     msg: "Invalid value for upgrade_command. Valid values are 'dist','full','safe' and 'yes'"

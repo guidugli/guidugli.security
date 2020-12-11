@@ -1,0 +1,70 @@
+---
+
+- name: Set banner on GNOME graphical interface
+  block:
+    - name: Create required directories
+      file:
+        path: "{{ item.path }}"
+        state: "{{ item.state }}"
+        mode: "{{ item.mode }}"
+        owner: root
+        group: root
+        modification_time: preserve
+        access_time: preserve
+      loop:
+        - { path: '/etc/dconf/db/gdm.d', state: 'directory', mode: '0755' }
+        - { path: '/usr/share/pixmaps/logo', state: 'directory', mode: '0755' }
+
+    - name: Set gdm dconf profile
+      blockinfile:
+        path: /etc/dconf/profile/gdm
+        mode: 0644
+        state: present
+        create: yes
+        owner: root
+        group: root
+        marker: "## {mark} ANSIBLE MANAGED BLOCK ##"
+        block: |
+          user-db:user
+          system-db:gdm
+          file-db:{{ _greeter_dconf_defaults[ansible_os_family] }}
+      notify: dconf update
+
+    - name: Copy logo
+      copy:
+        src: "files/{{ banner_logo_file_name }}"
+        dest: "/usr/share/pixmaps/logo/{{ banner_logo_file_name }}"
+        mode: '0644'
+        owner: root
+        group: root
+        force: yes
+      when: banner_logo_file_name is defined
+
+    - name: Configure Logo
+      ini_file:
+        path: /etc/dconf/db/gdm.d/01-logo
+        section: "org/gnome/login-screen"
+        mode: '0644'
+        state: present
+        create: yes
+        option: logo
+        value: "'/usr/share/pixmaps/logo/{{ banner_logo_file_name }}'"
+      notify: update-dconf
+      when: banner_logo_file_name is defined
+      notify: dconf update
+
+    - name: Configure Greeting Message
+      ini_file:
+        path: /etc/dconf/db/gdm.d/01-banner-message
+        section: "org/gnome/login-screen"
+        mode: '0644'
+        state: present
+        create: yes
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+      notify: dconf update
+      loop:
+        - { option: "banner-message-enable", value: "true" }
+        - { option: "banner-message-text", value: "'{{ banner_graphical_msg }}'" }
+      when: banner_graphical_msg is defined
+

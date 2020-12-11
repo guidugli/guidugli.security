@@ -28,6 +28,13 @@ firewall_default_protocol: tcp
 # If you don't specify a target in `firewall_services`, fall back to this. Valid options: allow, deny.
 firewall_default_action: allow
 
+# Assign interfaces to zones
+firewall_interface_zone:
+  - interface: enp1s0
+    zone: "{{ firewalld_default_zone }}"
+  - interface: virbr0
+    zone: libvirt
+
 # Maps a service name with port numbers.
 # For firewalld, if service exists, updates the ports, otherwise create the service
 # For UFW, do nothing, just use the port numbers when running the command later on the ports. 

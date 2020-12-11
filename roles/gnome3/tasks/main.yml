@@ -1,0 +1,52 @@
+---
+# tasks file for gnome3
+
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+
+- name: Enforce directory permissions
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+    modification_time: preserve
+    access_time: preserve
+  loop:
+    - /etc/dconf/db
+    - /etc/dconf/db/local.d
+    - /etc/dconf/db/local.d/locks
+    - /etc/dconf/db/ibus.d
+    - /etc/dconf/db/site.d
+    - /etc/dconf/db/site.d/locks
+    - /etc/dconf/db/distro.d
+    - /etc/dconf/db/distro.d/locks
+  when: "'dconf' in ansible_facts.packages"
+
+- name: Add configuration file to target local profile
+  template:
+    src: 10-ansible
+    dest: /etc/dconf/db/local.d/10-ansible
+    owner: root
+    group: root
+    mode: '0644'
+    force: yes
+  notify: dconf update
+  when: "'dconf' in ansible_facts.packages"
+
+- name: Add items to be locked
+  template:
+    src: 00-ansible-lock
+    dest: /etc/dconf/db/local.d/locks/00-ansible-lock
+    owner: root
+    group: root
+    mode: '0644'
+    force: yes
+  notify: dconf update
+  when: "'dconf' in ansible_facts.packages"
+
+- name: Configure GDM profile settings
+  include_tasks: gdm.yml
+  when: "'dconf' in ansible_facts.packages"

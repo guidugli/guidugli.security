@@ -10,18 +10,18 @@
 - name: Update cache
   apt:
     update_cache: yes
-    cache_valid_time: "{{ package_management.cache_valid_time }}"
+    cache_valid_time: "{{ pm_cache_valid_time }}"
 
 # Update the system with security packages using the system's package manager
 # Only update the system if the 'update_system' variable is set to true
 - name: Update packages
   apt:
-    upgrade: "{{ package_management.apt_upgrade_command }}"
-  when: package_management.update_system
+    upgrade: "{{ pm_apt_upgrade_command }}"
+  when: pm_update_system
 
 - name: Install packages
   apt:
-    name: "{{ package_management.install_packages }}"
+    name: "{{ pm_install_packages }}"
     state: present
 
 - name: Install GNUPG2 package so apt-key command works
@@ -31,14 +31,14 @@
 
 - name: Delete unused packages
   apt:
-    name: "{{ package_management.remove_packages }}"
+    name: "{{ pm_remove_packages }}"
     state: absent
-    purge: "{{ package_management.purge }}"
+    purge: "{{ pm_purge }}"
 
 - name: Autoremove unneeded packages installed as dependencies
   apt:
     autoremove: yes
-  when: package_management.autoremove
+  when: pm_autoremove
 
 - name: Perform autoclean (remove useless files from cache)
   apt:
@@ -88,6 +88,6 @@
     post_reboot_delay: 30
     test_command: uptime
   when:
-    - package_management.reboot_after_update | bool
+    - pm_reboot_after_update | bool
     - pkgmgr_boot_required.rc == 0
     - ansible_connection != "docker"

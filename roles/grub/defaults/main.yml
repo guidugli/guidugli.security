@@ -5,6 +5,9 @@ grub_timeout: 5
 
 grub_recordfail_timeout: "{{ grub_timeout }}"
 
+# Should role perform a reboot after setting up grub?
+grub_allow_reboot: no
+
 # Options to be added
 # Value is optional
 #grub_options_present:

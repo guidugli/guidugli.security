@@ -25,11 +25,15 @@
 
     - name: Set default zone to {{ firewalld_default_zone | default('public') }}
       command: "firewall-cmd --set-default-zone={{ firewalld_default_zone | default('public') }}"
-      when: firewalld_zone is defined and firewalld_get_default_zone_cmd.stdout != firewalld_default_zone
+      when: 
+        - firewalld_default_zone is defined
+        - firewalld_get_default_zone_cmd.stdout != firewalld_default_zone
 
+    # In case user did not specify a default zone
     - name: Update firewalld_default_zone if required
       set_fact:
         firewalld_default_zone: "{{ firewalld_get_default_zone_cmd.stdout }}"
+      when: firewalld_default_zone is undefined
 
 - name: open ports (firewalld-port)
   firewalld:
@@ -41,7 +45,7 @@
   when:
     - firewall_services is defined
     - item.name | int(-1) > 0
-    - (item.action is not defined and firewall_default_action == 'allow') or
+    - (item.action is undefined and firewall_default_action == 'allow') or
       (item.action is defined and item.action == 'allow')
   loop_control:
     label: "{{ item.name }}/{{ item.protocol | default(firewall_default_protocol) }}"
@@ -57,8 +61,8 @@
   loop: "{{ firewall_services }}"
   when:
     - item.name is number
-    - (item.action is not defined and firewall_default_action != 'allow') or
-      (item.action is defined and item.action != 'allow')
+    - (item.action is undefined and firewall_default_action == 'deny') or
+      (item.action is defined and item.action == 'deny')
   loop_control:
     label: "{{ item.name }}"
   notify:
@@ -73,7 +77,7 @@
   loop: "{{ firewall_services }}"
   when:
     - item.name is not number
-    - (item.action is not defined and firewall_default_action == 'allow') or
+    - (item.action is undefined and firewall_default_action == 'allow') or
       (item.action is defined and item.action == 'allow')
   loop_control:
     label: "{{ item.name }}"
@@ -92,7 +96,7 @@
   loop: "{{ firewall_services }}"
   when:
     - item.name is not number
-    - item_action == 'deny'
+    - (item.action is undefined and firewall_default_action == 'deny') or (item.action is defined and item_action == 'deny')
   loop_control:
     label: "{{ item.name }}, {{ item_zone }}"
   notify:
@@ -154,6 +158,14 @@
       when: firewall_output_default_action == 'allow'
       notify:
         - reload firewalld
+
+- name: Set zones for network devices
+  firewalld:
+    zone: "{{ item.zone }}"
+    interface: "{{ item.interface }}"
+    permanent: yes
+    state: enabled
+  loop: "{{ firewall_interface_zone }}"
 
 - meta: flush_handlers
 

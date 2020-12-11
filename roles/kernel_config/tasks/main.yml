@@ -6,7 +6,7 @@
 
 - name: Add files on /etc/modprobe.d to disable modules
   lineinfile:
-    path: "/etc/modprobe.d/{{ item }}.conf"
+    path: "/etc/modprobe.d/{{ item }}-disabled.conf"
     regexp: '^\s*install\s+{{ item }}\s+/bin/true'
     line: "install {{ item }} /bin/true"
     state: present
@@ -19,7 +19,7 @@
 
 - name: Add files on /etc/modprobe.d to blacklist modules
   lineinfile:
-    path: "/etc/modprobe.d/{{ item }}.conf"
+    path: "/etc/modprobe.d/{{ item }}-blacklist.conf"
     regexp: '^\s*blacklist\s+{{ item }}'
     line: "blacklist {{ item }}"
     state: present
@@ -60,3 +60,6 @@
     sysctl_set: yes
   loop: "{{ kernel_sysctl | default([]) }}"
   notify: flush network routes
+
+- name: Perform udev operations
+  import_tasks: udev.yml

@@ -19,6 +19,8 @@ openssh_permit_user_environment: no
 openssh_use_pam: yes
 openssh_max_startups: '10:30:60'
 openssh_use_dns: yes
+openssh_password_authentication: yes
+openssh_permit_tunnel: no
 
 #openssh_allow_users: ['myuser']
 #openssh_allow_groups: []

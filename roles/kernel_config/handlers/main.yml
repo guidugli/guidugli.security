@@ -19,3 +19,6 @@
     state: restarted
   when: ansible_service_mgr == 'systemd' and
         ansible_virtualization_type not in ['docker','lxc']
+
+- name: reload udev
+  shell: "{{ kernel_udev_reload_cmd }}"
